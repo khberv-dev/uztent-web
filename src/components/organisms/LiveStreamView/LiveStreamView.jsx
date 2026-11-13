@@ -6,6 +6,8 @@ import { useIsAuthenticated } from '@/lib/session'
 import { formatCount, formatDuration } from '@/lib/format'
 import { paths } from '@/routes/paths'
 import { ChatPanel } from '../ChatPanel'
+import { DonateButton } from '../DonateButton'
+import { DonationAlerts } from '../DonationAlerts'
 import { VodGrid } from '../VodGrid'
 import styles from './LiveStreamView.module.css'
 
@@ -24,6 +26,7 @@ export function LiveStreamView({ stream, name, isOwn = false }) {
             <div className={styles.view}>
                 <div className={styles.playerWrap}>
                     <LivePlayer url={stream.url} renditions={stream.renditions} />
+                    <DonationAlerts streamId={stream.id} />
                 </div>
 
                 <div className={styles.info}>
@@ -40,8 +43,10 @@ export function LiveStreamView({ stream, name, isOwn = false }) {
                             </div>
                         </div>
                     </div>
-                    {isOwn && (
+                    {isOwn ? (
                         <Button as={Link} to={paths.dashboard.home} variant="secondary">Streamni boshqarish</Button>
+                    ) : (
+                        <DonateButton target={stream.id} streamerName={name} />
                     )}
                 </div>
 

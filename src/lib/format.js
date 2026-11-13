@@ -60,3 +60,12 @@ export function formatClock(totalSeconds) {
     const s = String(total % 60).padStart(2, '0')
     return h ? `${h}:${String(m).padStart(2, '0')}:${s}` : `${m}:${s}`
 }
+
+/**
+ * 20000 → "20 000 soʻm" (non-breaking space between thousands). Grouped by hand: browsers' 'uz'
+ * locale data differs (Chrome groups with commas), and amounts must read the same everywhere.
+ */
+export function formatSom(amount) {
+    const digits = String(Math.round(Math.abs(amount))).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0')
+    return `${amount < 0 ? '−' : ''}${digits}\u00a0soʻm`
+}

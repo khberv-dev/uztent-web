@@ -20,6 +20,13 @@
 
 .legal { text-align: center; }
 
+.link {
+    color: var(--color-text-muted);
+    text-decoration: underline;
+}
+
+.link:hover { color: var(--color-text); }
+
 @media (max-width: 480px) {
     .panel { padding: var(--space-6) var(--space-4); }
 }

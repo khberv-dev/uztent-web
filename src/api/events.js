@@ -10,6 +10,7 @@ import { env } from '@/config/env'
  *   chat.message    data: ChatMessage
  *   chat.deleted    data: {id, streamId}
  *   chat.settings   data: {streamId, slowModeSeconds}
+ *   donation.received data: {id, streamId, donorName, amount, message, paidAt}
  *
  * One shared connection: opened with the first subscriber, closed with the last, reconnected with
  * backoff (1 s … 30 s). Events missed while disconnected are NOT replayed, so `onReconnect`

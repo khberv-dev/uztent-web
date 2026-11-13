@@ -3,6 +3,7 @@ import { AuthLayout, DashboardLayout, MainLayout } from '@/components/templates'
 import { AuthPage } from '@/pages/AuthPage'
 import { ChannelPage } from '@/pages/ChannelPage'
 import { StreamManagerPage, StreamSettingsPage, VideosPage } from '@/pages/dashboard'
+import { DonationCompletePage } from '@/pages/DonationCompletePage'
 import { GoogleCallbackPage } from '@/pages/GoogleCallbackPage'
 import { HomePage } from '@/pages/HomePage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
@@ -29,6 +30,7 @@ export function AppRoutes() {
                 <Route path={paths.home} element={<HomePage />} />
                 <Route path={paths.channel()} element={<ChannelPage />} />
                 <Route path={paths.stream()} element={<StreamPage />} />
+                <Route path={paths.donationComplete} element={<DonationCompletePage />} />
                 <Route element={<ProtectedRoute />}>
                     <Route path={paths.vod()} element={<VodPage />} />
                     <Route path={paths.settings} element={<SettingsPage />} />

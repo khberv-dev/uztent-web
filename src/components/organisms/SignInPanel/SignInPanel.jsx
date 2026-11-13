@@ -1,5 +1,6 @@
 import { Divider, Heading, Logo, Text } from '@/components/atoms'
 import { Alert, GoogleSignInButton } from '@/components/molecules'
+import { env } from '@/config/env'
 import { LoginForm } from '../LoginForm'
 import styles from './SignInPanel.module.css'
 
@@ -22,8 +23,11 @@ export function SignInPanel({ error, returnTo }) {
             <LoginForm />
 
             <Text size="xs" tone="subtle" className={styles.legal}>
-                Yangimisiz? Akkaunt yaratish uchun Google orqali davom eting. Davom etish orqali uztent Foydalanish
-                shartlariga rozilik bildirasiz va Maxfiylik siyosati bilan tanishganingizni tasdiqlaysiz.
+                Yangimisiz? Akkaunt yaratish uchun Google orqali davom eting. Davom etish orqali uztent{' '}
+                <a href={`${env.apiOrigin}/public/terms_use`} target="_blank" rel="noreferrer" className={styles.link}>Foydalanish shartlari</a>ga
+                rozilik bildirasiz va{' '}
+                <a href={`${env.apiOrigin}/public/privacy_policy`} target="_blank" rel="noreferrer" className={styles.link}>Maxfiylik siyosati</a>{' '}
+                bilan tanishganingizni tasdiqlaysiz.
             </Text>
         </div>
     )

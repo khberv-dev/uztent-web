@@ -8,6 +8,7 @@ import { useMe } from '@/features/users'
 import { useNow } from '@/hooks/useNow'
 import { formatCount, formatDuration } from '@/lib/format'
 import { paths } from '@/routes/paths'
+import { DonationAlerts } from '../DonationAlerts'
 import styles from './GoLivePanel.module.css'
 
 const TITLE_MAX = 140
@@ -134,7 +135,10 @@ function CopyStreamLink({ stream }) {
 function LiveStatus({ stream }) {
     return (
         <Card padding="md" className={styles.statusCard}>
-            <LivePlayer url={stream.url} renditions={stream.renditions} muted />
+            <div className={styles.preview}>
+                <LivePlayer url={stream.url} renditions={stream.renditions} muted />
+                <DonationAlerts streamId={stream.id} />
+            </div>
             <div className={styles.statusRow}>
                 <Badge variant="live">Live</Badge>
                 <Heading level={3} className={styles.statusTitle}>{stream.title}</Heading>

@@ -29,6 +29,7 @@
 }
 
 .playerWrap {
+    position: relative; /* donation alerts sit on top of the player */
     border-radius: var(--radius-md);
     overflow: hidden;
 }

@@ -7,6 +7,7 @@ export const paths = {
     channel: (username = ':username') => `/w/${username}`, // a user's live stream by username
     stream: (id = ':id') => `/streams/${id}`,
     vod: (id = ':id') => `/vods/${id}`,
+    donationComplete: '/donations/complete', // Multicard returns donors here (the API's DONATION_RETURN_URL)
 
     // Streamer (publisher) pages
     dashboard: {

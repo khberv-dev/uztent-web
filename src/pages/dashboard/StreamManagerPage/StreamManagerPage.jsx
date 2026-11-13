@@ -1,4 +1,4 @@
-import { ChatPanel, GoLivePanel } from '@/components/organisms'
+import { ChatPanel, GoLivePanel, RecentDonations } from '@/components/organisms'
 import { useMyLiveStream } from '@/features/streams'
 import styles from './StreamManagerPage.module.css'
 
@@ -8,7 +8,10 @@ export function StreamManagerPage() {
 
     return (
         <div className={stream ? styles.withChat : styles.page}>
-            <GoLivePanel />
+            <div className={styles.main}>
+                <GoLivePanel />
+                {stream && <RecentDonations key={stream.id} streamId={stream.id} />}
+            </div>
             {stream && (
                 <ChatPanel
                     key={stream.id}

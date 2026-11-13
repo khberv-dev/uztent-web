@@ -87,3 +87,9 @@
 }
 
 .link:hover { text-decoration: underline; }
+
+.preview {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}

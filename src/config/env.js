@@ -24,6 +24,8 @@ const apiUrl = required('VITE_API_URL')
 
 export const env = {
     apiUrl,
+    // The API's own origin, for things outside the /v1 prefix (e.g. /public/privacy_policy)
+    apiOrigin: new URL(apiUrl).origin,
     // Real-time events; defaults to <API origin>/ws
     wsUrl: import.meta.env.VITE_WS_URL || defaultWsUrl(apiUrl),
     googleClientId: required('VITE_GOOGLE_CLIENT_ID'),

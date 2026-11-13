@@ -1,3 +1,5 @@
+import { formatSom } from '@/lib/format'
+
 /*
  * Helpers for the API's NestJS error format:
  *   { message: string | string[], error?: string, statusCode: number }
@@ -41,6 +43,11 @@ const API_MESSAGES = {
     "The streamer can't be banned": 'Streamerni ban qilib boʻlmaydi.',
     "You can't ban yourself": 'Oʻzingizni ban qila olmaysiz.',
     'You are already the streamer of your channel': 'Siz bu kanalning streamerisiz.',
+    "You can't donate to your own stream": 'Oʻz streamingizga donat qila olmaysiz.',
+    'Too many donation requests, try again in a minute': 'Juda koʻp soʻrov. Bir daqiqadan soʻng qayta urinib koʻring.',
+    'Payment provider is unavailable': 'Toʻlov tizimi hozir ishlamayapti. Keyinroq urinib koʻring.',
+    'Payment provider rejected the request': 'Toʻlov tizimi soʻrovni rad etdi. Keyinroq urinib koʻring.',
+    'Donation not found': 'Donat topilmadi.',
     'No stream key yet. Generate one with POST /streams/me/key': 'Hali stream key yoʻq. Avval stream key yarating.',
 }
 
@@ -48,14 +55,17 @@ function translate(message) {
     if (API_MESSAGES[message]) return API_MESSAGES[message]
     const slow = message.match(/^Slow mode is on: wait (\d+) s/)
     if (slow) return `Slow mode yoqilgan: keyingi xabar uchun ${slow[1]} s kuting.`
+    const amount = message.match(/^amount must be between (\d+) and (\d+)/)
+    if (amount) return `Summa ${formatSom(Number(amount[1]))} va ${formatSom(Number(amount[2]))} oraligʻida boʻlishi kerak.`
     return message.charAt(0).toUpperCase() + message.slice(1)
 }
 
 /** One human-readable message for an alert. */
 export function getErrorMessage(error, fallback = 'Nimadir xato ketdi. Qayta urinib koʻring.') {
     if (error?.code === 'ERR_NETWORK') return 'Serverga ulanib boʻlmadi. Internet aloqasini tekshiring.'
-    if (getErrorStatus(error) >= 500) return 'Serverda xatolik. Birozdan soʻng qayta urinib koʻring.'
     const messages = messagesOf(error)
+    // 5xx: only documented messages (e.g. 502 "Payment provider is unavailable") are worth showing
+    if (getErrorStatus(error) >= 500 && !messages.some((m) => API_MESSAGES[m])) return 'Serverda xatolik. Birozdan soʻng qayta urinib koʻring.'
     if (messages.length === 0) return fallback
     return messages.map(translate).join(' ')
 }

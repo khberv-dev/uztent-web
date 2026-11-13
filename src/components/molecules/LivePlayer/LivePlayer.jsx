@@ -3,15 +3,10 @@ import { readPreference, writePreference } from '@/lib/preferences'
 import { VideoPlayer } from '../VideoPlayer'
 
 const SOURCE = 'Source'
-const DEFAULT_QUALITY = '720p'
 
-/** Picks the remembered quality, else 720p, else the original broadcast. */
+/** Picks the remembered quality, else the first (highest) rendition, else the original broadcast. */
 function resolve(options, preferred) {
-    return (
-        options.find((option) => option.quality === preferred) ??
-        options.find((option) => option.quality === DEFAULT_QUALITY) ??
-        options[0]
-    )
+    return options.find((option) => option.quality === preferred) ?? options[1] ?? options[0]
 }
 
 /**
@@ -22,7 +17,7 @@ function resolve(options, preferred) {
  * @param {{url: string, renditions?: {quality: string, url: string}[], muted?: boolean}} props
  */
 export function LivePlayer({ url, renditions = [], muted = false }) {
-    const [preferred, setPreferred] = useState(() => readPreference('liveQuality', DEFAULT_QUALITY))
+    const [preferred, setPreferred] = useState(() => readPreference('liveQuality', null))
     const options = [{ quality: SOURCE, url }, ...renditions]
     const selected = resolve(options, preferred)
 
