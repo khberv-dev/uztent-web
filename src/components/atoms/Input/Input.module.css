@@ -44,3 +44,8 @@
     align-items: center;
     color: var(--color-text-muted);
 }
+
+/* iOS Safari zooms the page into any focused input smaller than 16px */
+@media (pointer: coarse) {
+    .input { font-size: 1.6rem; }
+}

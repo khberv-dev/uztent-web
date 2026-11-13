@@ -71,11 +71,9 @@ export function VodPage() {
                             <Heading level={2}>{vod.title}</Heading>
                             <Text tone="primary" weight="semibold">{name}</Text>
                             <div className={styles.metaRow}>
-                                <Text size="sm" tone="muted">{formatDate(vod.startedAt)}</Text>
-                                <Text size="sm" tone="muted">·</Text>
-                                <Text size="sm" tone="muted">{formatDuration(vod.startedAt, vod.endedAt)}</Text>
-                                <Text size="sm" tone="muted">·</Text>
-                                <Text size="sm" tone="muted">Eng koʻp {formatCount(vod.peakViewers)} tomoshabin</Text>
+                                <Text size="sm" tone="muted" className={styles.metaItem}>{formatDate(vod.startedAt)}</Text>
+                                <Text size="sm" tone="muted" className={styles.metaItem}>{formatDuration(vod.startedAt, vod.endedAt)}</Text>
+                                <Text size="sm" tone="muted" className={styles.metaItem}>Eng koʻp {formatCount(vod.peakViewers)} tomoshabin</Text>
                             </div>
                         </div>
                     </div>
@@ -96,7 +94,9 @@ export function VodPage() {
 
                 {remove.isError && <Alert>{getErrorMessage(remove.error, 'Videoni oʻchirib boʻlmadi.')}</Alert>}
 
-                <VodGrid userId={vod.userId} title="Shu streamerning boshqa videolari" limit={8} excludeId={vod.id} hideWhenEmpty />
+                <div className={styles.more}>
+                    <VodGrid userId={vod.userId} title="Shu streamerning boshqa videolari" limit={8} excludeId={vod.id} hideWhenEmpty />
+                </div>
             </div>
             <ChatPanel streamId={vod.id} ownerId={vod.userId} live={false} className={styles.chat} />
         </div>

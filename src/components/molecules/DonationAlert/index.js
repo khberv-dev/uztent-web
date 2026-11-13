@@ -1,1 +1,0 @@
-export { DonationAlert } from './DonationAlert'

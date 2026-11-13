@@ -7,7 +7,6 @@ import { formatCount, formatDuration } from '@/lib/format'
 import { paths } from '@/routes/paths'
 import { ChatPanel } from '../ChatPanel'
 import { DonateButton } from '../DonateButton'
-import { DonationAlerts } from '../DonationAlerts'
 import { VodGrid } from '../VodGrid'
 import styles from './LiveStreamView.module.css'
 
@@ -26,7 +25,6 @@ export function LiveStreamView({ stream, name, isOwn = false }) {
             <div className={styles.view}>
                 <div className={styles.playerWrap}>
                     <LivePlayer url={stream.url} renditions={stream.renditions} />
-                    <DonationAlerts streamId={stream.id} />
                 </div>
 
                 <div className={styles.info}>
@@ -50,7 +48,11 @@ export function LiveStreamView({ stream, name, isOwn = false }) {
                     )}
                 </div>
 
-                {authenticated && <VodGrid userId={stream.userId} title="Oldingi streamlar" limit={8} hideWhenEmpty />}
+                {authenticated && (
+                    <div className={styles.more}>
+                        <VodGrid userId={stream.userId} title="Oldingi streamlar" limit={8} hideWhenEmpty />
+                    </div>
+                )}
             </div>
             <ChatPanel
                 streamId={stream.id}

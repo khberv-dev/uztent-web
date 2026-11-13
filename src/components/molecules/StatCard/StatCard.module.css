@@ -50,3 +50,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+@media (max-width: 480px) {
+    .label { white-space: normal; }
+}

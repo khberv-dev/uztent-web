@@ -1,8 +1,6 @@
 import { Icon } from '@/components/atoms'
-import { formatSom } from '@/lib/format'
+import { formatSom, formatTime } from '@/lib/format'
 import styles from './ChatDonation.module.css'
-
-const timeFormat = new Intl.DateTimeFormat('uz', { hour: '2-digit', minute: '2-digit' })
 
 /**
  * A paid donation shown in the chat, highlighted like a pinned message.
@@ -11,7 +9,7 @@ const timeFormat = new Intl.DateTimeFormat('uz', { hour: '2-digit', minute: '2-d
 export function ChatDonation({ donation }) {
     const time = donation.paidAt ?? donation.createdAt
     return (
-        <div className={styles.donation} title={time ? timeFormat.format(new Date(time)) : undefined}>
+        <div className={styles.donation} title={time ? formatTime(time) : undefined}>
             <p className={styles.head}>
                 <span className={styles.icon}><Icon name="gift" size={14} strokeWidth={2.5} /></span>
                 <span className={styles.donor}>{donation.donorName ?? 'Anonim'}</span>{' '}

@@ -74,6 +74,8 @@
 
 .menuOpen { background: var(--color-hover); }
 
+.actionable { cursor: pointer; }
+
 .menu {
     position: fixed;
     z-index: 60;
@@ -114,7 +116,7 @@
     margin-top: var(--space-1);
 }
 
-@media (hover: none) {
+@media (hover: none), (pointer: coarse) {
     /* No hover on touch screens: keep the menu button visible */
     .trigger { display: inline-flex; background: transparent; color: var(--color-text-muted); }
     .body { padding-right: 2.8rem; }

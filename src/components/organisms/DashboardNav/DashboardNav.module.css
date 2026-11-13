@@ -54,6 +54,8 @@
 .badge { margin-left: auto; }
 
 /* Narrow screens: icon rail */
+.short { display: none; }
+
 @media (max-width: 1100px) {
     .nav { width: var(--sidebar-width-collapsed); }
     .heading,
@@ -73,8 +75,9 @@
         border-bottom: 1px solid var(--color-border);
     }
     .list { display: flex; }
-    .list li { flex: 1; }
-    .label { display: inline; font-size: var(--font-size-sm); }
+    .list li { flex: 1; min-width: max-content; }
+    .label { display: none; }
+    .short { display: inline; font-size: var(--font-size-sm); }
     .link { justify-content: center; gap: var(--space-2); padding: var(--space-3) var(--space-2); white-space: nowrap; }
     .active::before { top: auto; left: 0; right: 0; width: auto; height: 2px; }
 }

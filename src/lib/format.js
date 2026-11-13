@@ -1,25 +1,36 @@
-const compact = new Intl.NumberFormat('uz', { notation: 'compact', maximumFractionDigits: 1 })
-const relative = new Intl.RelativeTimeFormat('uz', { numeric: 'auto' })
-const dateFormat = new Intl.DateTimeFormat('uz', { dateStyle: 'medium' })
+/*
+ * Uzbek formatting is done by hand: browsers ship incomplete 'uz' locale data (Chrome formats
+ * relative time as "-1 h", dates as "2026 M11 12" and compact numbers as "1.2K"), so Intl can't be
+ * trusted to read the same everywhere.
+ */
 
+const NBSP = '\u00a0'
+const groupDigits = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, NBSP)
+const oneDecimal = (n) => (Math.round(n * 10) / 10).toString().replace('.', ',')
+
+/** 950 → "950", 1234 → "1,2 ming", 3400000 → "3,4 mln" */
 export function formatCount(count) {
-    return compact.format(count)
+    const n = Math.max(0, Math.round(count ?? 0))
+    if (n < 1000) return String(n)
+    if (n < 1_000_000) return `${oneDecimal(n / 1000)} ming`
+    if (n < 1_000_000_000) return `${oneDecimal(n / 1_000_000)} mln`
+    return `${oneDecimal(n / 1_000_000_000)} mlrd`
 }
 
 const UNITS = [
-    ['year', 365 * 24 * 3600],
-    ['month', 30 * 24 * 3600],
-    ['week', 7 * 24 * 3600],
-    ['day', 24 * 3600],
-    ['hour', 3600],
-    ['minute', 60],
+    ['yil', 365 * 24 * 3600],
+    ['oy', 30 * 24 * 3600],
+    ['hafta', 7 * 24 * 3600],
+    ['kun', 24 * 3600],
+    ['soat', 3600],
+    ['daqiqa', 60],
 ]
 
-/** "3 hours ago", "yesterday", "just now" */
+/** "3 soat oldin", "2 kun oldin", "hozirgina" */
 export function formatTimeAgo(iso, now = Date.now()) {
-    const seconds = (new Date(iso).getTime() - now) / 1000
+    const seconds = Math.max(0, (now - new Date(iso).getTime()) / 1000)
     for (const [unit, size] of UNITS) {
-        if (Math.abs(seconds) >= size) return relative.format(Math.round(seconds / size), unit)
+        if (seconds >= size) return `${Math.floor(seconds / size)} ${unit} oldin`
     }
     return 'hozirgina'
 }
@@ -34,8 +45,19 @@ export function formatDuration(fromIso, toIso = new Date().toISOString()) {
     return `${h ? `${h}:` : ''}${mm}:${String(s).padStart(2, '0')}`
 }
 
-export function formatDate(iso) {
-    return dateFormat.format(new Date(iso))
+const MONTHS = ['yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avgust', 'sentabr', 'oktabr', 'noyabr', 'dekabr']
+
+/** "12-noyabr, 2026" (the year is left out for the current year) */
+export function formatDate(iso, now = new Date()) {
+    const date = new Date(iso)
+    const day = `${date.getDate()}-${MONTHS[date.getMonth()]}`
+    return date.getFullYear() === now.getFullYear() ? day : `${day}, ${date.getFullYear()}`
+}
+
+/** "09:05" (24-hour, local time) */
+export function formatTime(iso) {
+    const date = new Date(iso)
+    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
 }
 
 /** Stable hue (0–359) from an id, for placeholder thumbnails. */
@@ -66,6 +88,5 @@ export function formatClock(totalSeconds) {
  * locale data differs (Chrome groups with commas), and amounts must read the same everywhere.
  */
 export function formatSom(amount) {
-    const digits = String(Math.round(Math.abs(amount))).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0')
-    return `${amount < 0 ? '−' : ''}${digits}\u00a0soʻm`
+    return `${amount < 0 ? '−' : ''}${groupDigits(Math.round(Math.abs(amount)))}${NBSP}soʻm`
 }

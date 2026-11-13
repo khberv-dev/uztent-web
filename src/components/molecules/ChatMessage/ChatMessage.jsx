@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Icon } from '@/components/atoms'
 import { cn } from '@/lib/cn'
-import { hueFromId } from '@/lib/format'
+import { hueFromId, formatTime } from '@/lib/format'
 import styles from './ChatMessage.module.css'
 
 const ROLE_BADGES = {
@@ -9,12 +9,12 @@ const ROLE_BADGES = {
     moderator: { icon: 'shield', label: 'Moderator' },
 }
 
-const timeFormat = new Intl.DateTimeFormat('uz', { hour: '2-digit', minute: '2-digit' })
 const MENU_HEIGHT_GUESS = 140 // px; opens upwards when there isn't this much room below
 
 /**
  * One chat line (Twitch style): role badge, sender name in a stable per-user color, text.
- * `actions` go in a "⋯" menu that appears on hover/focus. `children` render under the line
+ * `actions` go in a "⋯" menu that appears on hover/focus. Tapping the message also opens it, since
+ * touch devices have no hover (and some don't say so in their media queries). `children` render under the line
  * (e.g. a confirmation).
  * @param {{
  *   message: import('@/api/chat').ChatMessage,
@@ -54,9 +54,12 @@ export function ChatMessage({ message, own = false, actions = [], children }) {
         }
     }, [menu])
 
-    function toggleMenu() {
+    /** @param {Element} [anchor] element to open the menu next to (default: the ⋯ button) */
+    function toggleMenu(anchor) {
         if (menu) return setMenu(null)
-        const rect = triggerRef.current.getBoundingClientRect()
+        // The ⋯ button is hidden until hover, so a tap on the row anchors to the row instead
+        const button = triggerRef.current
+        const rect = (button.offsetParent ? button : anchor ?? button).getBoundingClientRect()
         const right = window.innerWidth - rect.right
         const openUp = rect.bottom + MENU_HEIGHT_GUESS > window.innerHeight
         return setMenu(openUp ? { right, bottom: window.innerHeight - rect.top + 4 } : { right, top: rect.bottom + 4 })
@@ -65,8 +68,13 @@ export function ChatMessage({ message, own = false, actions = [], children }) {
     return (
         <div
             ref={rootRef}
-            className={cn(styles.message, own && styles.own, menu && styles.menuOpen)}
-            title={timeFormat.format(new Date(message.createdAt))}
+            className={cn(styles.message, own && styles.own, menu && styles.menuOpen, actions.length > 0 && styles.actionable)}
+            onClick={(event) => {
+                // A tap on the line itself (not a button inside it, not a text selection) opens the menu
+                if (!actions.length || event.target.closest('button, a') || window.getSelection()?.toString()) return
+                toggleMenu(event.currentTarget)
+            }}
+            title={formatTime(message.createdAt)}
         >
             <p className={styles.body}>
                 {badge && (
@@ -89,7 +97,7 @@ export function ChatMessage({ message, own = false, actions = [], children }) {
                         title="Boshqa amallar"
                         aria-haspopup="menu"
                         aria-expanded={Boolean(menu)}
-                        onClick={toggleMenu}
+                        onClick={() => toggleMenu()}
                     >
                         <Icon name="moreHorizontal" size={16} />
                     </button>

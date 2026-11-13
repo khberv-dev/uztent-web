@@ -6,14 +6,11 @@ import { Alert, FormField, LivePlayer, StatCard } from '@/components/molecules'
 import { useMyLiveStream, useStreamSettings, useUpdateStreamTitle } from '@/features/streams'
 import { useMe } from '@/features/users'
 import { useNow } from '@/hooks/useNow'
-import { formatCount, formatDuration } from '@/lib/format'
+import { formatCount, formatDuration, formatTime } from '@/lib/format'
 import { paths } from '@/routes/paths'
-import { DonationAlerts } from '../DonationAlerts'
 import styles from './GoLivePanel.module.css'
 
 const TITLE_MAX = 140
-const timeFormat = new Intl.DateTimeFormat('uz', { hour: '2-digit', minute: '2-digit' })
-
 /** Ticks every second on its own, so only this value re-renders. */
 function LiveTime({ startedAt }) {
     const now = useNow()
@@ -78,7 +75,7 @@ function StreamStats({ stream, loading }) {
                 label="Live vaqti"
                 active={live}
                 value={live ? <LiveTime startedAt={stream.startedAt} /> : 'Offline'}
-                hint={live ? `Boshlangan: ${timeFormat.format(new Date(stream.startedAt))}` : 'Live’ga chiqish uchun encoder’da streamni boshlang'}
+                hint={live ? `Boshlangan: ${formatTime(stream.startedAt)}` : 'Live’ga chiqish uchun encoder’da streamni boshlang'}
             />
             <StatCard
                 icon="eye"
@@ -137,7 +134,6 @@ function LiveStatus({ stream }) {
         <Card padding="md" className={styles.statusCard}>
             <div className={styles.preview}>
                 <LivePlayer url={stream.url} renditions={stream.renditions} muted />
-                <DonationAlerts streamId={stream.id} />
             </div>
             <div className={styles.statusRow}>
                 <Badge variant="live">Live</Badge>

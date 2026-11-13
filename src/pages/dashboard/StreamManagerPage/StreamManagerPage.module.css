@@ -26,8 +26,8 @@
     .withChat { grid-template-columns: minmax(0, 1fr); }
     .chat {
         position: static;
-        height: 48rem;
-        min-height: 0;
+        height: min(48rem, 70vh);
+        min-height: 32rem;
     }
 }
 
