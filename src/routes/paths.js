@@ -13,6 +13,7 @@ export const paths = {
     dashboard: {
         home: '/dashboard', // stream manager: live status, title
         videos: '/dashboard/videos', // own recordings
+        earnings: '/dashboard/earnings', // donations received (/monetization/*)
         settings: '/dashboard/settings', // stream key, publish URL
     },
 }

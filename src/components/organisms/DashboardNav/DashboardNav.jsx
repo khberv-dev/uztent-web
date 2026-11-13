@@ -8,6 +8,7 @@ import styles from './DashboardNav.module.css'
 const ITEMS = [
     { to: paths.dashboard.home, icon: 'broadcast', label: 'Stream boshqaruvi', short: 'Boshqaruv', end: true },
     { to: paths.dashboard.videos, icon: 'video', label: 'Videolar', short: 'Videolar' },
+    { to: paths.dashboard.earnings, icon: 'wallet', label: 'Daromad', short: 'Daromad' },
     { to: paths.dashboard.settings, icon: 'settings', label: 'Stream sozlamalari', short: 'Sozlamalar' },
 ]
 

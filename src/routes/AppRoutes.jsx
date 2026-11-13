@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from 'react-router'
 import { AuthLayout, DashboardLayout, MainLayout } from '@/components/templates'
 import { AuthPage } from '@/pages/AuthPage'
 import { ChannelPage } from '@/pages/ChannelPage'
-import { StreamManagerPage, StreamSettingsPage, VideosPage } from '@/pages/dashboard'
+import { EarningsPage, StreamManagerPage, StreamSettingsPage, VideosPage } from '@/pages/dashboard'
 import { DonationCompletePage } from '@/pages/DonationCompletePage'
 import { GoogleCallbackPage } from '@/pages/GoogleCallbackPage'
 import { HomePage } from '@/pages/HomePage'
@@ -43,6 +43,7 @@ export function AppRoutes() {
                 <Route path={paths.dashboard.home} element={<DashboardLayout />}>
                     <Route index element={<StreamManagerPage />} />
                     <Route path="videos" element={<VideosPage />} />
+                    <Route path="earnings" element={<EarningsPage />} />
                     <Route path="settings" element={<StreamSettingsPage />} />
                     <Route path="*" element={<Navigate to={paths.dashboard.home} replace />} />
                 </Route>

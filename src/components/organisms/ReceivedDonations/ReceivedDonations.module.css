@@ -1,0 +1,119 @@
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.total { font-size: inherit; font-weight: var(--font-weight-semibold); }
+
+.streamFilter {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    max-width: 100%;
+    height: 2.8rem;
+    padding: 0 var(--space-2);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-full);
+    background: var(--color-primary-subtle);
+    color: var(--color-text);
+    font: inherit;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+}
+
+.streamFilter:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+.streamTitle {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3) 0;
+}
+
+.row + .row { border-top: 1px solid var(--color-border); }
+
+.icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    border-radius: var(--radius-md);
+    background: var(--color-primary-subtle);
+    color: var(--color-primary);
+}
+
+.icon.muted {
+    background: var(--color-hover);
+    color: var(--color-text-muted);
+}
+
+.body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.line {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+}
+
+.status {
+    flex-shrink: 0;
+    padding: 0 var(--space-2);
+    border-radius: var(--radius-full);
+    background: var(--color-hover);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    line-height: 2rem;
+}
+
+.failed {
+    background: var(--color-danger-subtle);
+    color: var(--color-danger);
+}
+
+.message { overflow-wrap: anywhere; }
+
+.amount {
+    flex-shrink: 0;
+    color: var(--color-primary);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.unpaid { color: var(--color-text-muted); }
+
+.more { align-self: center; }

@@ -55,6 +55,7 @@ export function Navbar({ onToggleSidebar }) {
                             items={[
                                 { icon: 'broadcast', label: 'Streamer paneli', onSelect: () => navigate(paths.dashboard.home) },
                                 { icon: 'video', label: 'Videolarim', onSelect: () => navigate(paths.dashboard.videos) },
+                                { icon: 'wallet', label: 'Daromad', onSelect: () => navigate(paths.dashboard.earnings) },
                                 { icon: 'settings', label: 'Akkaunt sozlamalari', onSelect: () => navigate(paths.settings) },
                             ]}
                             onSignOut={signOut}

@@ -81,3 +81,9 @@
     .link { justify-content: center; gap: var(--space-2); padding: var(--space-3) var(--space-2); white-space: nowrap; }
     .active::before { top: auto; left: 0; right: 0; width: auto; height: 2px; }
 }
+
+/* Small phones: four tabs only fit as text */
+@media (max-width: 430px) {
+    .link svg { display: none; }
+    .link { padding: var(--space-3) var(--space-1); }
+}
