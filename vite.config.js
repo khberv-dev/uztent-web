@@ -1,0 +1,22 @@
+import { fileURLToPath, URL } from 'node:url'
+import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite'
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
+  server: {
+    // Must match the Google OAuth redirect URI (http://localhost:8080/auth/google)
+    port: 8080,
+    strictPort: true,
+  },
+  preview: {
+    port: 8080,
+    strictPort: true,
+  },
+})

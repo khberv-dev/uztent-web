@@ -1,0 +1,121 @@
+.message {
+    position: relative;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-sm);
+}
+
+.message:hover,
+.message:focus-within {
+    background: var(--color-hover);
+}
+
+.body {
+    margin: 0;
+    font-size: var(--font-size-md);
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.8rem;
+    height: 1.8rem;
+    margin-right: var(--space-1);
+    vertical-align: -0.3rem;
+    border-radius: var(--radius-sm);
+    color: #fff;
+}
+
+.streamer { background: var(--color-live); }
+.moderator { background: var(--color-success); }
+
+.name {
+    font-weight: var(--font-weight-bold);
+    color: hsl(var(--hue) 85% 68%);
+}
+
+.colon { color: var(--color-text); }
+.text { color: var(--color-text); }
+
+.trigger {
+    position: absolute;
+    top: 0.2rem;
+    right: var(--space-1);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-3);
+    color: var(--color-text);
+    cursor: pointer;
+}
+
+.trigger:hover { background: var(--color-active); }
+.trigger:focus-visible { outline: 2px solid var(--color-focus); }
+
+.message:hover .trigger,
+.message:focus-within .trigger,
+.menuOpen .trigger {
+    display: inline-flex;
+}
+
+/* Leave room for the button so it never covers the end of the text */
+.message:hover .body,
+.message:focus-within .body,
+.menuOpen .body {
+    padding-right: 2.8rem;
+}
+
+.menuOpen { background: var(--color-hover); }
+
+.menu {
+    position: fixed;
+    z-index: 60;
+    min-width: 18rem;
+    padding: var(--space-1);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: 100%;
+    padding: var(--space-2);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+    font-size: var(--font-size-sm);
+    text-align: left;
+    cursor: pointer;
+}
+
+.item:hover,
+.item:focus-visible { background: var(--color-hover); outline: none; }
+
+.danger { color: var(--color-danger); }
+
+.extra {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-1);
+}
+
+@media (hover: none) {
+    /* No hover on touch screens: keep the menu button visible */
+    .trigger { display: inline-flex; background: transparent; color: var(--color-text-muted); }
+    .body { padding-right: 2.8rem; }
+}

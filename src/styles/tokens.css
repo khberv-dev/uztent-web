@@ -1,0 +1,83 @@
+/*
+ * Design tokens. Dark, dense UI modeled on twitch.tv, with blue as the primary accent.
+ * Components consume these through CSS modules; never hard-code colors in components.
+ */
+:root {
+    /* Primary (blue) */
+    --color-primary: #3d7bff;
+    --color-primary-hover: #2f6af0;
+    --color-primary-active: #2257d1;
+    --color-primary-subtle: rgba(61, 123, 255, 0.16);
+    --color-on-primary: #ffffff;
+
+    /* Surfaces */
+    --color-bg: #0e0e10;
+    --color-surface: #18181b;
+    --color-surface-2: #1f1f23;
+    --color-surface-3: #26262c;
+    --color-overlay: rgba(0, 0, 0, 0.6);
+
+    /* Borders */
+    --color-border: #2f2f35;
+    --color-border-strong: #53535f;
+
+    /* Text */
+    --color-text: #efeff1;
+    --color-text-muted: #adadb8;
+    --color-text-subtle: #7a7a85;
+
+    /* Interactive neutrals */
+    --color-hover: rgba(83, 83, 95, 0.38);
+    --color-active: rgba(83, 83, 95, 0.55);
+    --color-input-bg: #18181b;
+
+    /* Status */
+    --color-live: #eb0400;
+    --color-danger: #f13c43;
+    --color-danger-subtle: rgba(241, 60, 67, 0.14);
+    --color-success: #00c853;
+    --color-focus: #6fa0ff;
+
+    /* Typography */
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-size-xs: 1.2rem;
+    --font-size-sm: 1.3rem;
+    --font-size-md: 1.4rem;
+    --font-size-lg: 1.8rem;
+    --font-size-xl: 2.4rem;
+    --font-size-2xl: 3.6rem;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-heavy: 800;
+
+    /* Spacing (4px grid; 1rem = 10px, see global.css) */
+    --space-1: 0.4rem;
+    --space-2: 0.8rem;
+    --space-3: 1.2rem;
+    --space-4: 1.6rem;
+    --space-5: 2rem;
+    --space-6: 2.4rem;
+    --space-8: 3.2rem;
+    --space-10: 4rem;
+
+    /* Radii */
+    --radius-sm: 0.4rem;
+    --radius-md: 0.6rem;
+    --radius-lg: 1rem;
+    --radius-full: 9999px;
+
+    /* Elevation */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.9), 0 0 2px rgba(0, 0, 0, 0.9);
+    --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.4), 0 0 4px rgba(0, 0, 0, 0.4);
+
+    /* Layout */
+    --navbar-height: 5rem;
+    --sidebar-width: 24rem;
+    --sidebar-width-collapsed: 5rem;
+
+    /* Motion */
+    --transition-fast: 120ms ease;
+    --transition-base: 200ms ease;
+}

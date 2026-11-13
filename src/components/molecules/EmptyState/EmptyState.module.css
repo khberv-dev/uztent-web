@@ -1,0 +1,18 @@
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-10) var(--space-4);
+    text-align: center;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-lg);
+}
+
+.icon {
+    display: inline-flex;
+    padding: var(--space-3);
+    border-radius: 50%;
+    background: var(--color-primary-subtle);
+    color: var(--color-primary);
+}

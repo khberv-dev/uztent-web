@@ -1,0 +1,101 @@
+.layout {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.option {
+    min-width: 5.6rem;
+    height: 3.2rem;
+    padding: 0 var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-2);
+    color: var(--color-text);
+    font: inherit;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.option:hover:not(:disabled) { background: var(--color-hover); }
+.option:disabled { cursor: progress; }
+.option:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+.selected,
+.selected:hover:not(:disabled) {
+    background: var(--color-primary-subtle);
+    border-color: var(--color-primary);
+    color: var(--color-text);
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+}
+
+.row + .row { border-top: 1px solid var(--color-border); }
+
+.rowText {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.rowActions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-2);
+}
+
+.link {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-semibold);
+}
+
+.link:hover { text-decoration: underline; }
+
+/* Inside a modal: plain sections separated by lines instead of cards */
+.embedded { gap: 0; }
+
+.embedded .card {
+    padding: var(--space-5) 0;
+    background: none;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+.embedded .card:first-child { padding-top: 0; }
+.embedded .card:last-child { padding-bottom: 0; }
+.embedded .card + .card { border-top: 1px solid var(--color-border); }

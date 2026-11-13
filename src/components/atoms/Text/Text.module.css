@@ -1,0 +1,32 @@
+.size-xs { font-size: var(--font-size-xs); }
+.size-sm { font-size: var(--font-size-sm); }
+.size-md { font-size: var(--font-size-md); }
+.size-lg { font-size: var(--font-size-lg); }
+
+.tone-default { color: var(--color-text); }
+.tone-muted { color: var(--color-text-muted); }
+.tone-subtle { color: var(--color-text-subtle); }
+.tone-primary { color: var(--color-primary); }
+.tone-danger { color: var(--color-danger); }
+.tone-success { color: var(--color-success); }
+
+.weight-regular { font-weight: var(--font-weight-regular); }
+.weight-medium { font-weight: var(--font-weight-medium); }
+.weight-semibold { font-weight: var(--font-weight-semibold); }
+.weight-bold { font-weight: var(--font-weight-bold); }
+
+.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.heading {
+    color: var(--color-text);
+    line-height: 1.2;
+}
+
+.h1 { font-size: var(--font-size-2xl); font-weight: var(--font-weight-heavy); letter-spacing: -0.02em; }
+.h2 { font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); }
+.h3 { font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); }
+.h4 { font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); }

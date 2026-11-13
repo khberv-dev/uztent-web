@@ -1,0 +1,22 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    max-width: 180rem;
+    margin: 0 auto;
+}
+
+.hero {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.accent { color: var(--color-primary); }
+
+.link {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-semibold);
+}
+
+.link:hover { text-decoration: underline; }
