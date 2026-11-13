@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { getErrorMessage, getErrorStatus, getValidationErrors } from '@/api/errors'
 import { Badge, Button, Card, Heading, Icon, Skeleton, Text } from '@/components/atoms'
 import { Alert, FormField, LivePlayer, StatCard } from '@/components/molecules'
+import { useFollowStatus } from '@/features/follows'
 import { useMyLiveStream, useStreamSettings, useUpdateStreamTitle } from '@/features/streams'
 import { useMe } from '@/features/users'
 import { useNow } from '@/hooks/useNow'
@@ -56,13 +57,13 @@ function usePeakViewers(stream) {
 }
 
 /** Session stats: live time, viewers (from `stream.viewers` WebSocket events) and peak viewers. */
-function StreamStats({ stream, loading }) {
+function StreamStats({ stream, loading, followersCount }) {
     const peak = usePeakViewers(stream)
 
     if (loading) {
         return (
             <div className={styles.stats}>
-                {[0, 1, 2].map((i) => <Skeleton key={i} className={styles.statSkeleton} />)}
+                {[0, 1, 2, 3].map((i) => <Skeleton key={i} className={styles.statSkeleton} />)}
             </div>
         )
     }
@@ -90,6 +91,12 @@ function StreamStats({ stream, loading }) {
                 active={live}
                 value={live && peak !== null ? formatCount(peak) : '—'}
                 hint="Shu streamdagi eng yuqori tomoshabin soni (sahifa shu tabda ochilgandan beri)"
+            />
+            <StatCard
+                icon="heart"
+                label="Obunachilar"
+                value={followersCount == null ? '—' : formatCount(followersCount)}
+                hint="Sizga obuna boʻlganlar soni"
             />
         </div>
     )
@@ -236,12 +243,15 @@ function StreamTitleForm({ settings }) {
 /** Stream manager: live status, stream title, stream key. Going live/ending happens in the encoder. */
 export function GoLivePanel() {
     const settingsQuery = useStreamSettings()
+    const { data: me } = useMe()
+    // The count is on the stream settings; users without a stream key yet read it from their profile
+    const { data: followStatus } = useFollowStatus(settingsQuery.isSuccess && !settingsQuery.data ? me?.id : undefined)
     const liveQuery = useMyLiveStream()
     const stream = liveQuery.data
 
     return (
         <div className={styles.layout}>
-            {!liveQuery.isError && <StreamStats stream={stream} loading={liveQuery.isPending} />}
+            {!liveQuery.isError && <StreamStats stream={stream} loading={liveQuery.isPending} followersCount={settingsQuery.data?.followersCount ?? followStatus?.followersCount} />}
 
             {liveQuery.isPending && <Skeleton style={{ aspectRatio: '16 / 9', width: '100%' }} />}
             {liveQuery.isError && (

@@ -7,6 +7,8 @@ import { formatCount, formatDuration } from '@/lib/format'
 import { paths } from '@/routes/paths'
 import { ChatPanel } from '../ChatPanel'
 import { DonateButton } from '../DonateButton'
+import { FollowButton } from '../FollowButton'
+import { FollowersCount } from '../FollowersCount'
 import { VodGrid } from '../VodGrid'
 import styles from './LiveStreamView.module.css'
 
@@ -32,7 +34,10 @@ export function LiveStreamView({ stream, name, isOwn = false }) {
                         <Avatar name={name} size="lg" live />
                         <div className={styles.details}>
                             <Heading level={2}>{stream.title}</Heading>
-                            <Text tone="primary" weight="semibold">{name}</Text>
+                            <div className={styles.channelRow}>
+                                <Text tone="primary" weight="semibold">{name}</Text>
+                                <FollowersCount userId={stream.userId} name={name} />
+                            </div>
                             <div className={styles.metaRow}>
                                 <Badge variant="live">Live</Badge>
                                 <Text size="sm" tone="muted">{formatCount(stream.viewers)} tomoshabin</Text>
@@ -44,7 +49,10 @@ export function LiveStreamView({ stream, name, isOwn = false }) {
                     {isOwn ? (
                         <Button as={Link} to={paths.dashboard.home} variant="secondary">Streamni boshqarish</Button>
                     ) : (
-                        <DonateButton target={stream.id} streamerName={name} />
+                        <div className={styles.actions}>
+                            <FollowButton userId={stream.userId} />
+                            <DonateButton target={stream.id} streamerName={name} />
+                        </div>
                     )}
                 </div>
 

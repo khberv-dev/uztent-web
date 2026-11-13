@@ -1,0 +1,31 @@
+.wrap {
+    position: relative;
+    display: inline-flex;
+}
+
+/* Both labels share one grid cell, so the button doesn't change width on hover */
+.swap { display: inline-grid; }
+
+.idle,
+.hover { grid-area: 1 / 1; }
+
+.hover { visibility: hidden; }
+
+@media (hover: hover) {
+    .wrap button:hover:not(:disabled) .idle { visibility: hidden; }
+    .wrap button:hover:not(:disabled) .hover { visibility: visible; }
+}
+
+.error {
+    position: absolute;
+    top: calc(100% + var(--space-1));
+    right: 0;
+    z-index: 5;
+    width: max-content;
+    max-width: 24rem;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    background: var(--color-danger-subtle);
+    color: var(--color-danger);
+    font-size: var(--font-size-xs);
+}

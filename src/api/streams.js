@@ -26,6 +26,7 @@ import { apiClient } from './client'
  * @property {string} id
  * @property {string} title       1–140 characters, default "Untitled stream"; used for upcoming and current broadcasts
  * @property {number} chatSlowModeSeconds  0–3600 (0 = off); applies to upcoming broadcasts and immediately to a live one
+ * @property {number} followersCount  how many users follow the owner
  * @property {string} streamKey         secret, e.g. "sk_…"; only returned to its owner
  * @property {string} encoderStreamKey  what OBS needs as "Stream Key": "<id>?key=<streamKey>" (secret)
  * @property {string} publishUrl  ingest server, e.g. "rtmp://localhost:1935/live"
