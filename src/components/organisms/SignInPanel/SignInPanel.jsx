@@ -9,21 +9,21 @@ export function SignInPanel({ error, returnTo }) {
         <div className={styles.panel}>
             <div className={styles.header}>
                 <Logo size={40} />
-                <Heading level={2}>Log in to uztent</Heading>
-                <Text tone="muted" size="md">Watch live streams, follow channels and join the chat.</Text>
+                <Heading level={2}>uztent’ga kirish</Heading>
+                <Text tone="muted" size="md">Live streamlarni tomosha qiling, kanallarni kuzating va chatga qoʻshiling.</Text>
             </div>
 
             {error && <Alert>{error}</Alert>}
 
             <GoogleSignInButton returnTo={returnTo} />
 
-            <Divider>or</Divider>
+            <Divider>yoki</Divider>
 
             <LoginForm />
 
             <Text size="xs" tone="subtle" className={styles.legal}>
-                New here? Continue with Google to create an account. By continuing, you agree to the uztent Terms of
-                Service and acknowledge the Privacy Notice.
+                Yangimisiz? Akkaunt yaratish uchun Google orqali davom eting. Davom etish orqali uztent Foydalanish
+                shartlariga rozilik bildirasiz va Maxfiylik siyosati bilan tanishganingizni tasdiqlaysiz.
             </Text>
         </div>
     )

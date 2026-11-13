@@ -6,8 +6,8 @@ export function StreamSettingsPage() {
     return (
         <div className={styles.page}>
             <header className={styles.header}>
-                <Heading level={1}>Stream settings</Heading>
-                <Text tone="muted" size="lg">Connect your encoder (e.g. OBS) with your server address and stream key.</Text>
+                <Heading level={1}>Stream sozlamalari</Heading>
+                <Text tone="muted" size="lg">Encoder’ingizni (masalan, OBS) server manzili va stream key orqali ulang.</Text>
             </header>
             <StreamKeyCard />
         </div>

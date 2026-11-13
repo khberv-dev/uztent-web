@@ -18,7 +18,7 @@ export function GoogleCallbackPage() {
     const { mutate } = useGoogleSignIn({
         onSuccess: () => navigate(takeGoogleReturnTo() ?? paths.home, { replace: true }),
         onError: (error) =>
-            navigate(paths.auth, { replace: true, state: { error: getErrorMessage(error, 'Google sign-in failed. Please try again.') } }),
+            navigate(paths.auth, { replace: true, state: { error: getErrorMessage(error, 'Google orqali kirib boʻlmadi. Qayta urinib koʻring.') } }),
     })
 
     useEffect(() => {
@@ -40,7 +40,7 @@ export function GoogleCallbackPage() {
     return (
         <div className={styles.page}>
             <Spinner size="lg" className={styles.spinner} />
-            <Text tone="muted">Signing you in…</Text>
+            <Text tone="muted">Kirilmoqda…</Text>
         </div>
     )
 }

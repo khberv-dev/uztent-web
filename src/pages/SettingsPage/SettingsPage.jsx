@@ -10,7 +10,7 @@ export function SettingsPage() {
 
     return (
         <div className={styles.page}>
-            <Heading level={1}>Settings</Heading>
+            <Heading level={1}>Sozlamalar</Heading>
 
             {isPending && (
                 <Card>
@@ -22,8 +22,8 @@ export function SettingsPage() {
 
             {isError && (
                 <Alert>
-                    {getErrorMessage(error, 'Couldn’t load your profile.')}{' '}
-                    <Button variant="ghost" size="sm" onClick={() => refetch()}>Try again</Button>
+                    {getErrorMessage(error, 'Profilni yuklab boʻlmadi.')}{' '}
+                    <Button variant="ghost" size="sm" onClick={() => refetch()}>Qayta urinish</Button>
                 </Alert>
             )}
 

@@ -37,7 +37,7 @@ export function ProfileForm({ user }) {
         },
         onError: (error) => {
             if (getErrorStatus(error) === 409) {
-                setErrors({ username: 'That username is already taken. Try another one.' })
+                setErrors({ username: 'Bu username band. Boshqasini tanlang.' })
                 return
             }
             const result = getValidationErrors(error, FIELDS)
@@ -54,13 +54,13 @@ export function ProfileForm({ user }) {
 
     // Submit-time/server errors win; otherwise show the live result
     let usernameError = errors.username
-    if (!usernameError && availability.status === 'taken') usernameError = `@${availability.username} is already taken.`
+    if (!usernameError && availability.status === 'taken') usernameError = `@${availability.username} band.`
     if (!usernameError && availability.status === 'invalid' && /[^a-z0-9_.]/.test(availability.username)) {
-        usernameError = 'Only letters, digits, underscores and dots are allowed.'
+        usernameError = 'Faqat harflar, raqamlar, pastki chiziq va nuqta mumkin.'
     }
-    const usernameSuccess = availability.status === 'available' ? `@${availability.username} is available.` : undefined
+    const usernameSuccess = availability.status === 'available' ? `@${availability.username} boʻsh.` : undefined
     const usernameStatusIcon =
-        availability.status === 'checking' ? <Spinner size="sm" label="Checking availability" />
+        availability.status === 'checking' ? <Spinner size="sm" label="Tekshirilmoqda" />
         : availability.status === 'available' ? <Icon name="check" size={18} className={styles.available} />
         : null
 
@@ -84,16 +84,16 @@ export function ProfileForm({ user }) {
     return (
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
             <div className={styles.header}>
-                <Heading level={3}>Profile</Heading>
-                <Text tone="muted">Change how you appear on uztent.</Text>
+                <Heading level={3}>Profil</Heading>
+                <Text tone="muted">uztent’da qanday koʻrinishingizni oʻzgartiring.</Text>
             </div>
 
             {formError && <Alert>{formError}</Alert>}
-            {saved && <Alert variant="success">Profile saved.</Alert>}
+            {saved && <Alert variant="success">Profil saqlandi.</Alert>}
 
             <div className={styles.row}>
                 <FormField
-                    label="First name"
+                    label="Ism"
                     required
                     autoComplete="given-name"
                     maxLength={100}
@@ -102,7 +102,7 @@ export function ProfileForm({ user }) {
                     error={errors.firstName}
                 />
                 <FormField
-                    label="Last name"
+                    label="Familiya"
                     autoComplete="family-name"
                     maxLength={100}
                     value={values.lastName}
@@ -124,10 +124,10 @@ export function ProfileForm({ user }) {
                 onChange={update('username')}
                 error={usernameError}
                 success={usernameSuccess}
-                hint="3–30 characters: letters, digits, underscores or dots. You can log in with it once you set a password."
+                hint="3–30 ta belgi: harflar, raqamlar, pastki chiziq yoki nuqta. Parol oʻrnatgach, u bilan ham kira olasiz."
             />
 
-            <FormField label="Email" value={user.email} disabled hint="Your email comes from Google and can’t be changed." />
+            <FormField label="Email" value={user.email} disabled hint="Email Google’dan olinadi va uni oʻzgartirib boʻlmaydi." />
 
             <div className={styles.actions}>
                 <Button
@@ -139,10 +139,10 @@ export function ProfileForm({ user }) {
                         setFormError(null)
                     }}
                 >
-                    Cancel
+                    Bekor qilish
                 </Button>
                 <Button type="submit" loading={isPending} disabled={!dirty || usernameBlocked}>
-                    Save changes
+                    Saqlash
                 </Button>
             </div>
         </form>

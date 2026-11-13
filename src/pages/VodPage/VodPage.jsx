@@ -14,9 +14,9 @@ function NotFound() {
     return (
         <EmptyState
             icon="alert"
-            title="Video not found"
-            description="It may have been deleted, or the link is wrong."
-            action={<Button as={Link} to={paths.home}>Go home</Button>}
+            title="Video topilmadi"
+            description="U oʻchirilgan yoki link notoʻgʻri boʻlishi mumkin."
+            action={<Button as={Link} to={paths.home}>Bosh sahifaga</Button>}
         />
     )
 }
@@ -30,7 +30,7 @@ export function VodPage() {
     const remove = useDeleteVod({ onSuccess: () => navigate(paths.dashboard.videos, { replace: true }) })
 
     if (!isUuid(id) || getErrorStatus(error) === 404) return <NotFound />
-    if (error && !vod) return <Alert>{getErrorMessage(error, 'Couldn’t load the video.')}</Alert>
+    if (error && !vod) return <Alert>{getErrorMessage(error, 'Videoni yuklab boʻlmadi.')}</Alert>
 
     if (isPending) {
         return (
@@ -48,7 +48,7 @@ export function VodPage() {
         <div className={styles.withChat}>
             <div className={styles.page}>
                 {location.state?.ended && (
-                    <Alert variant="info">This stream has ended. Here’s the recording.</Alert>
+                    <Alert variant="info">Stream tugadi. Mana uning yozuvi.</Alert>
                 )}
 
                 <div className={styles.playerWrap}>
@@ -58,8 +58,8 @@ export function VodPage() {
                         <div className={styles.processing} style={{ '--hue': hueFromId(vod.id), position: 'relative' }}>
                             {vod.previewUri && <img src={vod.previewUri} alt="" />}
                             <Icon name="clock" size={32} />
-                            <Text weight="semibold">The recording is still being processed.</Text>
-                            <Text size="sm" tone="muted">This page checks again every 30 seconds.</Text>
+                            <Text weight="semibold">Yozuv hali ishlanmoqda.</Text>
+                            <Text size="sm" tone="muted">Sahifa har 30 soniyada qayta tekshiradi.</Text>
                         </div>
                     )}
                 </div>
@@ -71,11 +71,11 @@ export function VodPage() {
                             <Heading level={2}>{vod.title}</Heading>
                             <Text tone="primary" weight="semibold">{name}</Text>
                             <div className={styles.metaRow}>
-                                <Text size="sm" tone="muted">Streamed {formatDate(vod.startedAt)}</Text>
+                                <Text size="sm" tone="muted">{formatDate(vod.startedAt)}</Text>
                                 <Text size="sm" tone="muted">·</Text>
                                 <Text size="sm" tone="muted">{formatDuration(vod.startedAt, vod.endedAt)}</Text>
                                 <Text size="sm" tone="muted">·</Text>
-                                <Text size="sm" tone="muted">Peak {formatCount(vod.peakViewers)} viewers</Text>
+                                <Text size="sm" tone="muted">Eng koʻp {formatCount(vod.peakViewers)} tomoshabin</Text>
                             </div>
                         </div>
                     </div>
@@ -84,19 +84,19 @@ export function VodPage() {
                             <ConfirmButton
                                 variant="secondary"
                                 leftIcon={<Icon name="trash" size={16} />}
-                                confirmLabel="Delete video"
+                                confirmLabel="Videoni oʻchirish"
                                 loading={remove.isPending}
                                 onConfirm={() => remove.mutate(vod.id)}
                             >
-                                Delete
+                                Oʻchirish
                             </ConfirmButton>
                         </div>
                     )}
                 </div>
 
-                {remove.isError && <Alert>{getErrorMessage(remove.error, 'Couldn’t delete the video.')}</Alert>}
+                {remove.isError && <Alert>{getErrorMessage(remove.error, 'Videoni oʻchirib boʻlmadi.')}</Alert>}
 
-                <VodGrid userId={vod.userId} title="More from this streamer" limit={8} excludeId={vod.id} hideWhenEmpty />
+                <VodGrid userId={vod.userId} title="Shu streamerning boshqa videolari" limit={8} excludeId={vod.id} hideWhenEmpty />
             </div>
             <ChatPanel streamId={vod.id} ownerId={vod.userId} live={false} className={styles.chat} />
         </div>

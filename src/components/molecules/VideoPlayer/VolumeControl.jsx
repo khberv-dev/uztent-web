@@ -8,7 +8,7 @@ export function VolumeControl({ volume, muted, onToggleMute, onVolumeChange }) {
 
     return (
         <div className={styles.volume}>
-            <button type="button" className={styles.controlButton} onClick={onToggleMute} aria-label={muted ? 'Unmute (m)' : 'Mute (m)'} title={muted ? 'Unmute (m)' : 'Mute (m)'}>
+            <button type="button" className={styles.controlButton} onClick={onToggleMute} aria-label={muted ? 'Ovozni yoqish (m)' : 'Ovozni oʻchirish (m)'} title={muted ? 'Ovozni yoqish (m)' : 'Ovozni oʻchirish (m)'}>
                 <Icon name={icon} size={22} />
             </button>
             <input
@@ -20,7 +20,7 @@ export function VolumeControl({ volume, muted, onToggleMute, onVolumeChange }) {
                 value={effective}
                 onChange={(event) => onVolumeChange(Number(event.target.value))}
                 onKeyDown={(event) => event.stopPropagation()}
-                aria-label="Volume"
+                aria-label="Ovoz balandligi"
                 style={{ '--fill': `${effective * 100}%` }}
             />
         </div>

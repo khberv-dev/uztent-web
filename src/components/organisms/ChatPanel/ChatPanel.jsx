@@ -51,17 +51,17 @@ export function ChatPanel({ streamId, ownerId, live, slowModeSeconds = 0, classN
     const [armedBan, setArmedBan] = useState(null) // message id waiting for ban confirmation
     const onActionError = (fallback) => (err) => setNotice({ tone: 'error', text: getErrorMessage(err, fallback) })
 
-    const remove = useDeleteChatMessage(streamId, { onError: onActionError('Couldn’t delete the message.') })
+    const remove = useDeleteChatMessage(streamId, { onError: onActionError('Xabarni oʻchirib boʻlmadi.') })
     const ban = useBanInChat(streamId, {
         onSuccess: (_, userId) => {
-            const name = messages.findLast((m) => m.userId === userId)?.senderName ?? 'The user'
-            setNotice({ tone: 'muted', text: `${name} is banned from this channel’s chat.` })
+            const name = messages.findLast((m) => m.userId === userId)?.senderName ?? 'Foydalanuvchi'
+            setNotice({ tone: 'muted', text: `${name} bu kanal chatidan ban qilindi.` })
             setArmedBan(null)
         },
-        onError: onActionError('Couldn’t ban the user.'),
+        onError: onActionError('Foydalanuvchini ban qilib boʻlmadi.'),
     })
-    const addModerator = useAddModerator({ onError: onActionError('Couldn’t add the moderator.') })
-    const removeModerator = useRemoveModerator({ onError: onActionError('Couldn’t remove the moderator.') })
+    const addModerator = useAddModerator({ onError: onActionError('Moderator qoʻshib boʻlmadi.') })
+    const removeModerator = useRemoveModerator({ onError: onActionError('Moderatorni olib tashlab boʻlmadi.') })
 
     /* ---------------------------- scrolling ---------------------------- */
     // Follow new messages while the viewer is at the bottom; when they scroll up to read, stay put
@@ -118,19 +118,19 @@ export function ChatPanel({ streamId, ownerId, live, slowModeSeconds = 0, classN
         if (!canActOn(message)) return []
         const name = message.senderName
         const items = [
-            { icon: 'trash', label: 'Delete message', onSelect: () => remove.mutate(message.id) },
-            { icon: 'ban', label: `Ban ${name}`, danger: true, onSelect: () => setArmedBan(message.id) },
+            { icon: 'trash', label: 'Xabarni oʻchirish', onSelect: () => remove.mutate(message.id) },
+            { icon: 'ban', label: `Ban qilish: ${name}`, danger: true, onSelect: () => setArmedBan(message.id) },
         ]
         if (isStreamer) {
             const isModerator = moderatorIds.has(message.userId)
             items.push({
                 icon: 'shield',
-                label: isModerator ? 'Remove moderator' : 'Make moderator',
+                label: isModerator ? 'Moderatorlikdan olish' : 'Moderator qilish',
                 onSelect: () => {
                     const mutation = isModerator ? removeModerator : addModerator
                     mutation.mutate(message.userId, {
                         onSuccess: () =>
-                            setNotice({ tone: 'muted', text: isModerator ? `${name} is no longer a moderator.` : `${name} is now a moderator.` }),
+                            setNotice({ tone: 'muted', text: isModerator ? `${name} endi moderator emas.` : `${name} endi moderator.` }),
                     })
                 },
             })
@@ -143,8 +143,8 @@ export function ChatPanel({ streamId, ownerId, live, slowModeSeconds = 0, classN
         if (armedBan !== message.id) return null
         return (
             <>
-                <Text size="sm" tone="muted">Ban {message.senderName} from this channel’s chat?</Text>
-                <Button size="sm" variant="ghost" onClick={() => setArmedBan(null)}>Cancel</Button>
+                <Text size="sm" tone="muted">{message.senderName} bu kanal chatidan ban qilinsinmi?</Text>
+                <Button size="sm" variant="ghost" onClick={() => setArmedBan(null)}>Bekor qilish</Button>
                 <Button size="sm" variant="danger" autoFocus loading={ban.isPending} onClick={() => ban.mutate(message.userId)}>
                     Ban
                 </Button>
@@ -155,11 +155,11 @@ export function ChatPanel({ streamId, ownerId, live, slowModeSeconds = 0, classN
     /* ---------------------------- footer ---------------------------- */
     let footer
     if (!live) {
-        footer = <Text size="sm" tone="muted" className={styles.footerNote}>Chat replay. The stream has ended.</Text>
+        footer = <Text size="sm" tone="muted" className={styles.footerNote}>Chat yozuvi. Stream tugagan.</Text>
     } else if (!authenticated) {
         footer = (
             <Button as={Link} to={paths.auth} state={{ from: location.pathname }} fullWidth>
-                Log in to chat
+                Chatda yozish uchun kiring
             </Button>
         )
     } else if (permissions.isPending) {
@@ -167,7 +167,7 @@ export function ChatPanel({ streamId, ownerId, live, slowModeSeconds = 0, classN
     } else if (permissions.data?.banned) {
         footer = (
             <Text size="sm" tone="muted" className={styles.footerNote}>
-                <Icon name="ban" size={14} /> You’re banned from this channel’s chat.
+                <Icon name="ban" size={14} /> Siz bu kanal chatidan ban qilingansiz.
             </Text>
         )
     } else {
@@ -182,25 +182,25 @@ export function ChatPanel({ streamId, ownerId, live, slowModeSeconds = 0, classN
     }
 
     return (
-        <section className={cn(styles.panel, className)} aria-label={live ? 'Stream chat' : 'Chat replay'}>
+        <section className={cn(styles.panel, className)} aria-label={live ? 'Stream chat' : 'Chat yozuvi'}>
             <header className={styles.header}>
                 <Text as="h2" size="sm" weight="bold" className={styles.title}>
-                    {live ? 'Stream chat' : 'Chat replay'}
+                    {live ? 'Stream chat' : 'Chat yozuvi'}
                 </Text>
                 <div className={styles.headerEnd}>
                     {live && slowModeSeconds > 0 && (
-                        <span className={styles.slowMode} title={`Viewers can send one message every ${slowModeSeconds} s`}>
+                        <span className={styles.slowMode} title={`Tomoshabinlar har ${slowModeSeconds} s da bitta xabar yubora oladi`}>
                             <Icon name="clock" size={12} /> Slow {slowModeSeconds} s
                         </span>
                     )}
                     {isStreamer && (
-                        <IconButton icon="settings" size="sm" label="Chat settings" onClick={() => setSettingsOpen(true)} />
+                        <IconButton icon="settings" size="sm" label="Chat sozlamalari" onClick={() => setSettingsOpen(true)} />
                     )}
                 </div>
             </header>
 
             {isStreamer && (
-                <Modal open={settingsOpen} onClose={() => setSettingsOpen(false)} title="Chat settings">
+                <Modal open={settingsOpen} onClose={() => setSettingsOpen(false)} title="Chat sozlamalari">
                     <ChatModerationSettings embedded />
                 </Modal>
             )}
@@ -210,7 +210,7 @@ export function ChatPanel({ streamId, ownerId, live, slowModeSeconds = 0, classN
                     {history.hasNextPage && (
                         <div className={styles.older}>
                             <Button size="sm" variant="ghost" loading={history.isFetchingNextPage} onClick={loadOlder}>
-                                Load older messages
+                                Oldingi xabarlarni yuklash
                             </Button>
                         </div>
                     )}
@@ -218,15 +218,15 @@ export function ChatPanel({ streamId, ownerId, live, slowModeSeconds = 0, classN
                     {history.isPending && <div className={styles.center}><Spinner /></div>}
                     {history.isError && !history.data && (
                         <div className={styles.center}>
-                            <Text size="sm" tone="muted">{getErrorMessage(history.error, 'Couldn’t load the chat.')}</Text>
-                            <Button size="sm" variant="ghost" onClick={() => history.refetch()}>Try again</Button>
+                            <Text size="sm" tone="muted">{getErrorMessage(history.error, 'Chatni yuklab boʻlmadi.')}</Text>
+                            <Button size="sm" variant="ghost" onClick={() => history.refetch()}>Qayta urinish</Button>
                         </div>
                     )}
                     {history.isSuccess && messages.length === 0 && (
                         <div className={styles.center}>
                             <Icon name="message" size={24} />
                             <Text size="sm" tone="muted">
-                                {live ? 'Welcome to the chat! Say hi.' : 'Nobody chatted during this stream.'}
+                                {live ? 'Chatga xush kelibsiz! Salom bering.' : 'Bu stream davomida hech kim yozmagan.'}
                             </Text>
                         </div>
                     )}
@@ -245,7 +245,7 @@ export function ChatPanel({ streamId, ownerId, live, slowModeSeconds = 0, classN
 
                 {hasUnseen && (
                     <button type="button" className={styles.jump} onClick={jumpToLatest}>
-                        <Icon name="arrowDown" size={14} /> New messages
+                        <Icon name="arrowDown" size={14} /> Yangi xabarlar
                     </button>
                 )}
             </div>
@@ -254,7 +254,7 @@ export function ChatPanel({ streamId, ownerId, live, slowModeSeconds = 0, classN
                 {notice && (
                     <div className={cn(styles.notice, notice.tone === 'error' && styles.error)} role="status">
                         <span>{notice.text}</span>
-                        <IconButton icon="close" size="sm" label="Dismiss" onClick={() => setNotice(null)} />
+                        <IconButton icon="close" size="sm" label="Yopish" onClick={() => setNotice(null)} />
                     </div>
                 )}
                 {footer}

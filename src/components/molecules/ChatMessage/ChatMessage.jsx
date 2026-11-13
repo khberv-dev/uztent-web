@@ -9,7 +9,7 @@ const ROLE_BADGES = {
     moderator: { icon: 'shield', label: 'Moderator' },
 }
 
-const timeFormat = new Intl.DateTimeFormat('en', { hour: 'numeric', minute: '2-digit' })
+const timeFormat = new Intl.DateTimeFormat('uz', { hour: '2-digit', minute: '2-digit' })
 const MENU_HEIGHT_GUESS = 140 // px; opens upwards when there isn't this much room below
 
 /**
@@ -85,8 +85,8 @@ export function ChatMessage({ message, own = false, actions = [], children }) {
                         ref={triggerRef}
                         type="button"
                         className={styles.trigger}
-                        aria-label={`Actions for ${message.senderName}’s message`}
-                        title="More actions"
+                        aria-label={`${message.senderName} xabari uchun amallar`}
+                        title="Boshqa amallar"
                         aria-haspopup="menu"
                         aria-expanded={Boolean(menu)}
                         onClick={toggleMenu}

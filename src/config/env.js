@@ -15,6 +15,11 @@ function defaultWsUrl(apiUrl) {
     return url.toString()
 }
 
+/** Optional boolean flag: "true", "1" or "yes" (any case) turn it on; anything else, or unset, is off. */
+function flag(name) {
+    return ['true', '1', 'yes'].includes(String(import.meta.env[name] ?? '').trim().toLowerCase())
+}
+
 const apiUrl = required('VITE_API_URL')
 
 export const env = {
@@ -23,4 +28,6 @@ export const env = {
     wsUrl: import.meta.env.VITE_WS_URL || defaultWsUrl(apiUrl),
     googleClientId: required('VITE_GOOGLE_CLIENT_ID'),
     googleRedirectUri: required('VITE_GOOGLE_REDIRECT_URI'),
+    // "Beta" label next to the logo in the navbar
+    showBetaBadge: flag('VITE_SHOW_BETA_BADGE'),
 }

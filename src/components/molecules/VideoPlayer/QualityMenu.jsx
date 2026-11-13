@@ -39,16 +39,16 @@ export function QualityMenu({ qualities, quality, onChange, onOpenChange }) {
                 className={cn(styles.controlButton, open && styles.controlButtonActive)}
                 aria-haspopup="menu"
                 aria-expanded={open}
-                aria-label={`Quality: ${quality}`}
-                title="Quality"
+                aria-label={`Sifat: ${quality === 'Source' ? 'Asl' : quality}`}
+                title="Sifat"
                 onClick={() => setOpen(!open)}
             >
                 <Icon name="settings" size={20} />
                 <span className={styles.qualityBadge}>{quality === 'Source' ? 'SRC' : quality}</span>
             </button>
             {open && (
-                <div className={styles.menu} role="menu" aria-label="Quality">
-                    <div className={styles.menuTitle}>Quality</div>
+                <div className={styles.menu} role="menu" aria-label="Sifat">
+                    <div className={styles.menuTitle}>Sifat</div>
                     {qualities.map((option) => (
                         <button
                             key={option}
@@ -62,7 +62,7 @@ export function QualityMenu({ qualities, quality, onChange, onOpenChange }) {
                             }}
                         >
                             <span className={styles.menuCheck}>{option === quality && <Icon name="check" size={16} />}</span>
-                            {option}
+                            {option === 'Source' ? 'Asl' : option}
                         </button>
                     ))}
                 </div>

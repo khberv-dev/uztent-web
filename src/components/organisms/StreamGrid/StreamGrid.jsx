@@ -10,7 +10,7 @@ import { paths } from '@/routes/paths'
 import styles from './StreamGrid.module.css'
 
 /** Live streams from GET /streams, newest first, with "Show more". */
-export function StreamGrid({ title = 'Live now' }) {
+export function StreamGrid({ title = 'Hozir live’da' }) {
     const { data: me } = useMe()
     const { data, isPending, isError, error, refetch, hasNextPage, fetchNextPage, isFetchingNextPage } = useLiveStreams()
     const streams = flattenPages(data)
@@ -21,17 +21,17 @@ export function StreamGrid({ title = 'Live now' }) {
 
             {isError && (
                 <Alert>
-                    {getErrorMessage(error, 'Couldn’t load live streams.')}{' '}
-                    <Button variant="ghost" size="sm" onClick={() => refetch()}>Try again</Button>
+                    {getErrorMessage(error, 'Live streamlarni yuklab boʻlmadi.')}{' '}
+                    <Button variant="ghost" size="sm" onClick={() => refetch()}>Qayta urinish</Button>
                 </Alert>
             )}
 
             {!isPending && !isError && streams.length === 0 && (
                 <EmptyState
                     icon="broadcast"
-                    title="No one is live right now"
-                    description="Be the first: set up your stream and go live from your encoder."
-                    action={<Button as={Link} to={paths.dashboard.home}>Go live</Button>}
+                    title="Hozir hech kim live’da emas"
+                    description="Birinchi boʻling: streamingizni sozlang va encoder orqali live’ga chiqing."
+                    action={<Button as={Link} to={paths.dashboard.home}>Live’ga chiqish</Button>}
                 />
             )}
 
@@ -45,10 +45,10 @@ export function StreamGrid({ title = 'Live now' }) {
                             to={paths.stream(stream.id)}
                             title={stream.title}
                             avatarName={name}
-                            lines={[name, `Started ${formatTimeAgo(stream.startedAt)}`]}
+                            lines={[name, `${formatTimeAgo(stream.startedAt)} boshlangan`]}
                             hue={hueFromId(stream.id)}
                             topLeft={<Badge variant="live">Live</Badge>}
-                            bottomLeft={<Badge variant="overlay">{formatCount(stream.viewers)} viewers</Badge>}
+                            bottomLeft={<Badge variant="overlay">{formatCount(stream.viewers)} tomoshabin</Badge>}
                             bottomRight={<Badge variant="overlay">{formatDuration(stream.startedAt)}</Badge>}
                         />
                     )
@@ -58,7 +58,7 @@ export function StreamGrid({ title = 'Live now' }) {
             {hasNextPage && (
                 <div className={styles.more}>
                     <Button variant="secondary" loading={isFetchingNextPage} onClick={() => fetchNextPage()}>
-                        Show more
+                        Yana koʻrsatish
                     </Button>
                 </div>
             )}

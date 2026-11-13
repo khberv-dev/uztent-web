@@ -16,21 +16,21 @@ export function HomePage() {
         <div className={styles.page}>
             <header className={styles.hero}>
                 {!authenticated ? (
-                    <Heading level={1}>Live on <span className={styles.accent}>uztent</span></Heading>
+                    <Heading level={1}><span className={styles.accent}>uztent</span>’da hozir live</Heading>
                 ) : isPending ? (
                     <Skeleton style={{ height: '4.4rem', width: '32rem', maxWidth: '100%' }} />
                 ) : (
                     <Heading level={1}>
-                        Welcome{user ? <>, <span className={styles.accent}>{displayName(user)}</span></> : null}
+                        Xush kelibsiz{user ? <>, <span className={styles.accent}>{displayName(user)}</span></> : null}
                     </Heading>
                 )}
-                <Text tone="muted" size="lg">Here’s who’s live right now.</Text>
+                <Text tone="muted" size="lg">Hozir live’da boʻlganlar.</Text>
             </header>
 
             {user && !user.username && (
                 <Alert variant="info">
-                    Pick a username so people can find you.{' '}
-                    <Link to={paths.settings} className={styles.link}>Go to settings</Link>
+                    Sizni topishlari uchun username tanlang.{' '}
+                    <Link to={paths.settings} className={styles.link}>Sozlamalarga oʻtish</Link>
                 </Alert>
             )}
 

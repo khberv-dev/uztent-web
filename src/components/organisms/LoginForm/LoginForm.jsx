@@ -16,7 +16,7 @@ export function LoginForm() {
     const { mutate, isPending } = usePasswordLogin({
         onError: (error) => {
             if (getErrorStatus(error) === 401) {
-                setFormError('Incorrect login or password. Signed up with Google? Set a password in Settings first.')
+                setFormError('Login yoki parol notoʻgʻri. Google orqali roʻyxatdan oʻtganmisiz? Avval Sozlamalarda parol oʻrnating.')
                 return
             }
             const { fieldErrors, formError } = getValidationErrors(error, FIELDS)
@@ -36,8 +36,8 @@ export function LoginForm() {
         event.preventDefault()
         const login = values.login.trim()
         const nextErrors = {}
-        if (!login) nextErrors.login = 'Enter your email or username.'
-        if (!values.password) nextErrors.password = 'Enter your password.'
+        if (!login) nextErrors.login = 'Email yoki username kiriting.'
+        if (!values.password) nextErrors.password = 'Parolni kiriting.'
         setErrors(nextErrors)
         setFormError(null)
         if (Object.keys(nextErrors).length) return
@@ -49,7 +49,7 @@ export function LoginForm() {
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
             {formError && <Alert>{formError}</Alert>}
             <FormField
-                label="Email or username"
+                label="Email yoki username"
                 name="login"
                 autoComplete="username"
                 maxLength={254}
@@ -58,7 +58,7 @@ export function LoginForm() {
                 error={errors.login}
             />
             <PasswordField
-                label="Password"
+                label="Parol"
                 name="password"
                 autoComplete="current-password"
                 maxLength={128}
@@ -67,7 +67,7 @@ export function LoginForm() {
                 error={errors.password}
             />
             <Button type="submit" size="lg" fullWidth loading={isPending}>
-                Log in
+                Kirish
             </Button>
         </form>
     )

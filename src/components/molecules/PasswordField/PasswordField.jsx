@@ -13,7 +13,7 @@ export function PasswordField(props) {
             rightSlot={
                 <IconButton
                     icon={visible ? 'eyeOff' : 'eye'}
-                    label={visible ? 'Hide password' : 'Show password'}
+                    label={visible ? 'Parolni yashirish' : 'Parolni koʻrsatish'}
                     size="sm"
                     onClick={() => setVisible((value) => !value)}
                 />

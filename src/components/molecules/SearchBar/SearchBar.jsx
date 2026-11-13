@@ -4,7 +4,7 @@ import { cn } from '@/lib/cn'
 import styles from './SearchBar.module.css'
 
 /** Twitch-style search: input joined to a square search button. */
-export function SearchBar({ onSearch, placeholder = 'Search', className }) {
+export function SearchBar({ onSearch, placeholder = 'Qidirish', className }) {
     const [value, setValue] = useState('')
 
     function handleSubmit(event) {
@@ -23,7 +23,7 @@ export function SearchBar({ onSearch, placeholder = 'Search', className }) {
                 value={value}
                 onChange={(event) => setValue(event.target.value)}
             />
-            <button type="submit" className={styles.button} aria-label="Search">
+            <button type="submit" className={styles.button} aria-label="Qidirish">
                 <Icon name="search" size={18} />
             </button>
         </form>

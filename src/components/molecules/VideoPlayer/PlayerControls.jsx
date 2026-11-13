@@ -34,7 +34,7 @@ export function PlayerControls({
                 buffered={media.bufferedEnd}
                 onSeek={actions.seek}
                 labelFor={labelFor}
-                label={live ? 'Seek (drag to the end for live)' : 'Seek'}
+                label={live ? 'Vaqtni tanlash (live uchun oxiriga torting)' : 'Vaqtni tanlash'}
             />
 
             <div className={styles.controlRow}>
@@ -43,8 +43,8 @@ export function PlayerControls({
                         type="button"
                         className={styles.controlButton}
                         onClick={actions.togglePlay}
-                        aria-label={media.paused ? 'Play (k)' : 'Pause (k)'}
-                        title={media.paused ? 'Play (k)' : 'Pause (k)'}
+                        aria-label={media.paused ? 'Ijro etish (k)' : 'Pauza (k)'}
+                        title={media.paused ? 'Ijro etish (k)' : 'Pauza (k)'}
                     >
                         <Icon name={media.paused ? 'play' : 'pause'} size={22} />
                     </button>
@@ -62,8 +62,8 @@ export function PlayerControls({
                             className={cn(styles.liveIndicator, atLive && styles.liveIndicatorAtLive)}
                             onClick={actions.goLive}
                             disabled={atLive}
-                            aria-label={atLive ? 'Watching live' : 'Go to live'}
-                            title={atLive ? 'You’re watching live' : 'Go to live'}
+                            aria-label={atLive ? 'Live koʻryapsiz' : 'Live’ga qaytish'}
+                            title={atLive ? 'Live koʻryapsiz' : 'Live’ga qaytish'}
                         >
                             <span className={styles.liveDot} aria-hidden="true" />
                             Live
@@ -84,8 +84,8 @@ export function PlayerControls({
                         type="button"
                         className={styles.controlButton}
                         onClick={actions.toggleFullscreen}
-                        aria-label={fullscreen ? 'Exit fullscreen (f)' : 'Fullscreen (f)'}
-                        title={fullscreen ? 'Exit fullscreen (f)' : 'Fullscreen (f)'}
+                        aria-label={fullscreen ? 'Toʻliq ekrandan chiqish (f)' : 'Toʻliq ekran (f)'}
+                        title={fullscreen ? 'Toʻliq ekrandan chiqish (f)' : 'Toʻliq ekran (f)'}
                     >
                         <Icon name={fullscreen ? 'minimize' : 'maximize'} size={20} />
                     </button>

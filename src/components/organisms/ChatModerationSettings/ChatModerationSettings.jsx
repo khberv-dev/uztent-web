@@ -11,8 +11,8 @@ import { paths } from '@/routes/paths'
 import styles from './ChatModerationSettings.module.css'
 
 const SLOW_MODE_OPTIONS = [0, 3, 5, 10, 30, 60, 120, 300]
-const slowModeLabel = (seconds) => (seconds === 0 ? 'Off' : seconds < 60 ? `${seconds} s` : `${seconds / 60} min`)
-const channelUserName = (user) => user.username ?? (`${user.firstName} ${user.lastName}`.trim() || 'User')
+const slowModeLabel = (seconds) => (seconds === 0 ? 'Oʻchiq' : seconds < 60 ? `${seconds} s` : `${seconds / 60} daq`)
+const channelUserName = (user) => user.username ?? (`${user.firstName} ${user.lastName}`.trim() || 'Foydalanuvchi')
 
 function SlowModeCard() {
     const { data: settings, isPending } = useStreamSettings()
@@ -25,14 +25,14 @@ function SlowModeCard() {
         <Card className={styles.card}>
             <div className={styles.header}>
                 <Heading level={3}>Slow mode</Heading>
-                <Text tone="muted">How long viewers wait between messages. You and your moderators aren’t limited. Changes apply right away.</Text>
+                <Text tone="muted">Tomoshabinlar xabarlar orasida qancha kutishi kerakligi. Siz va moderatorlaringiz cheklanmaysiz. Oʻzgarishlar darhol kuchga kiradi.</Text>
             </div>
             {isPending ? (
                 <Skeleton style={{ height: '3.2rem' }} />
             ) : !settings ? (
                 <Alert variant="info">
-                    Generate a stream key first to set up your chat.{' '}
-                    <Link to={paths.dashboard.settings} className={styles.link}>Go to stream settings</Link>
+                    Chatni sozlash uchun avval stream key yarating.{' '}
+                    <Link to={paths.dashboard.settings} className={styles.link}>Stream sozlamalariga oʻtish</Link>
                 </Alert>
             ) : (
                 <div className={styles.options} role="radiogroup" aria-label="Slow mode">
@@ -54,8 +54,8 @@ function SlowModeCard() {
             {update.isError && (
                 <Alert>
                     {getErrorStatus(update.error) === 404
-                        ? 'Generate a stream key in stream settings first.'
-                        : getErrorMessage(update.error, 'Couldn’t change slow mode.')}
+                        ? 'Avval stream sozlamalarida stream key yarating.'
+                        : getErrorMessage(update.error, 'Slow mode’ni oʻzgartirib boʻlmadi.')}
                 </Alert>
             )}
         </Card>
@@ -69,8 +69,8 @@ function UserList({ query, emptyText, renderActions }) {
     if (query.isError) {
         return (
             <Alert>
-                {getErrorMessage(query.error, 'Couldn’t load the list.')}{' '}
-                <Button variant="ghost" size="sm" onClick={() => query.refetch()}>Try again</Button>
+                {getErrorMessage(query.error, 'Roʻyxatni yuklab boʻlmadi.')}{' '}
+                <Button variant="ghost" size="sm" onClick={() => query.refetch()}>Qayta urinish</Button>
             </Alert>
         )
     }
@@ -95,18 +95,18 @@ function UserList({ query, emptyText, renderActions }) {
 function ModeratorsCard() {
     const moderators = useModerators()
     const [error, setError] = useState(null)
-    const remove = useRemoveModerator({ onError: (err) => setError(getErrorMessage(err, 'Couldn’t remove the moderator.')) })
+    const remove = useRemoveModerator({ onError: (err) => setError(getErrorMessage(err, 'Moderatorni olib tashlab boʻlmadi.')) })
 
     return (
         <Card className={styles.card}>
             <div className={styles.header}>
-                <Heading level={3}>Moderators</Heading>
-                <Text tone="muted">Moderators can delete messages and ban viewers in all your chats, live and replays.</Text>
+                <Heading level={3}>Moderatorlar</Heading>
+                <Text tone="muted">Moderatorlar barcha chatlaringizda (live’da ham, yozuvlarda ham) xabarlarni oʻchira oladi va tomoshabinlarni ban qila oladi.</Text>
             </div>
             {error && <Alert>{error}</Alert>}
             <UserList
                 query={moderators}
-                emptyText="No moderators yet. To add one, open the ⋯ menu on a chat message and choose “Make moderator”."
+                emptyText="Hali moderatorlar yoʻq. Qoʻshish uchun chatdagi xabarning ⋯ menyusini oching va “Moderator qilish”ni tanlang."
                 renderActions={(user) => (
                     <Button
                         size="sm"
@@ -117,7 +117,7 @@ function ModeratorsCard() {
                             remove.mutate(user.userId)
                         }}
                     >
-                        Remove
+                        Olib tashlash
                     </Button>
                 )}
             />
@@ -129,32 +129,32 @@ function BansCard() {
     const bans = useChatBans()
     const [error, setError] = useState(null)
     const onError = (fallback) => (err) => setError(getErrorMessage(err, fallback))
-    const unban = useUnbanUser({ onError: onError('Couldn’t unban the user.') })
-    const promote = useAddModerator({ onError: onError('Couldn’t add the moderator.') })
+    const unban = useUnbanUser({ onError: onError('Foydalanuvchini unban qilib boʻlmadi.') })
+    const promote = useAddModerator({ onError: onError('Moderator qoʻshib boʻlmadi.') })
 
     return (
         <Card className={styles.card}>
             <div className={styles.header}>
-                <Heading level={3}>Banned users</Heading>
-                <Text tone="muted">Banned users can still read your chat, but can’t write in any of your streams.</Text>
+                <Heading level={3}>Ban qilinganlar</Heading>
+                <Text tone="muted">Ban qilinganlar chatni oʻqiy oladi, lekin streamlaringizning hech birida yoza olmaydi.</Text>
             </div>
             {error && <Alert>{error}</Alert>}
             <UserList
                 query={bans}
-                emptyText="Nobody is banned."
+                emptyText="Hech kim ban qilinmagan."
                 renderActions={(user) => (
                     <>
                         <Button
                             size="sm"
                             variant="ghost"
                             loading={promote.isPending && promote.variables === user.userId}
-                            title="Lifts the ban and makes them a moderator"
+                            title="Banni olib tashlaydi va moderator qiladi"
                             onClick={() => {
                                 setError(null)
                                 promote.mutate(user.userId)
                             }}
                         >
-                            Make moderator
+                            Moderator qilish
                         </Button>
                         <Button
                             size="sm"

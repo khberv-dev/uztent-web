@@ -27,11 +27,11 @@ export function ChatComposer({ streamId, slowModeSeconds, exempt, onForbidden })
         },
         onError: (err) => {
             const status = getErrorStatus(err)
-            if (status === 404) return setError('The stream has ended, so the chat is closed.')
-            setError(getErrorMessage(err, 'Message not sent. Try again.'))
+            if (status === 404) return setError('Stream tugadi, chat yopildi.')
+            setError(getErrorMessage(err, 'Xabar yuborilmadi. Qayta urinib koʻring.'))
             if (status === 429) {
                 // "Slow mode is on: wait 25 s before your next message"
-                const wait = Number(getErrorMessage(err, '').match(/wait (\d+) s/)?.[1])
+                const wait = Number(String(err.response?.data?.message ?? '').match(/wait (\d+) s/)?.[1])
                 if (wait > 0) setCooldownUntil(Date.now() + wait * 1000)
             }
             if (status === 403) onForbidden()
@@ -48,15 +48,15 @@ export function ChatComposer({ streamId, slowModeSeconds, exempt, onForbidden })
     }
 
     let hint = null
-    if (remaining > 0) hint = `Slow mode: you can send again in ${remaining} s`
-    else if (slowModeSeconds > 0 && !exempt) hint = `Slow mode: one message every ${slowModeSeconds} s`
+    if (remaining > 0) hint = `Slow mode: ${remaining} s dan keyin yana yoza olasiz`
+    else if (slowModeSeconds > 0 && !exempt) hint = `Slow mode: har ${slowModeSeconds} s da bitta xabar`
     else if (text.length > MAX_LENGTH - 50) hint = `${text.length}/${MAX_LENGTH}`
 
     return (
         <form className={styles.composer} onSubmit={handleSubmit}>
             <Input
-                aria-label="Send a message"
-                placeholder="Send a message"
+                aria-label="Xabar yozish"
+                placeholder="Xabar yozing"
                 maxLength={MAX_LENGTH}
                 value={text}
                 invalid={Boolean(error)}
@@ -70,7 +70,7 @@ export function ChatComposer({ streamId, slowModeSeconds, exempt, onForbidden })
                         type="submit"
                         icon="send"
                         size="sm"
-                        label="Send"
+                        label="Yuborish"
                         disabled={!trimmed || remaining > 0 || send.isPending}
                     />
                 }

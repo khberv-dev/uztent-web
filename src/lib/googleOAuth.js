@@ -66,17 +66,17 @@ export function parseGoogleCallback(hash) {
 
     const error = params.get('error')
     if (error) {
-        return { error: error === 'access_denied' ? 'Sign-in was cancelled.' : `Google returned an error: ${error}` }
+        return { error: error === 'access_denied' ? 'Kirish bekor qilindi.' : `Google xatolik qaytardi: ${error}` }
     }
 
     const idToken = params.get('id_token')
     if (!idToken) {
-        return { error: 'No ID token found in the Google response.' }
+        return { error: 'Google javobida ID token topilmadi.' }
     }
 
     const state = params.get('state')
     if (!expectedState || state !== expectedState) {
-        return { error: 'Sign-in session expired or is invalid. Please try again.' }
+        return { error: 'Kirish sessiyasi eskirgan yoki yaroqsiz. Qayta urinib koʻring.' }
     }
 
     return { idToken }

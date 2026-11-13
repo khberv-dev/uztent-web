@@ -25,13 +25,13 @@ export function PasswordForm({ user }) {
             setValues(EMPTY)
             setSuccess(
                 hasPassword
-                    ? 'Password changed. You’ve been signed out on your other devices.'
-                    : 'Password set. You can now log in with your email or username.',
+                    ? 'Parol oʻzgartirildi. Boshqa qurilmalardan chiqib ketdingiz.'
+                    : 'Parol oʻrnatildi. Endi email yoki username bilan kira olasiz.',
             )
         },
         onError: (error) => {
             if (getErrorStatus(error) === 401) {
-                setErrors({ currentPassword: 'Current password is incorrect.' })
+                setErrors({ currentPassword: 'Joriy parol notoʻgʻri.' })
                 return
             }
             const result = getValidationErrors(error, FIELDS)
@@ -64,11 +64,11 @@ export function PasswordForm({ user }) {
     return (
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
             <div className={styles.header}>
-                <Heading level={3}>{hasPassword ? 'Change password' : 'Set a password'}</Heading>
+                <Heading level={3}>{hasPassword ? 'Parolni oʻzgartirish' : 'Parol oʻrnatish'}</Heading>
                 <Text tone="muted">
                     {hasPassword
-                        ? 'Changing your password signs you out on every other device.'
-                        : 'Optional. With a password you can also log in with your email or username, without Google.'}
+                        ? 'Parolni oʻzgartirsangiz, boshqa barcha qurilmalardan chiqib ketasiz.'
+                        : 'Ixtiyoriy. Parol bilan Google’siz, email yoki username orqali ham kira olasiz.'}
                 </Text>
             </div>
 
@@ -80,7 +80,7 @@ export function PasswordForm({ user }) {
 
             {hasPassword && (
                 <PasswordField
-                    label="Current password"
+                    label="Joriy parol"
                     required
                     autoComplete="current-password"
                     maxLength={128}
@@ -90,17 +90,17 @@ export function PasswordForm({ user }) {
                 />
             )}
             <PasswordField
-                label="New password"
+                label="Yangi parol"
                 required
                 autoComplete="new-password"
                 maxLength={128}
                 value={values.newPassword}
                 onChange={update('newPassword')}
                 error={errors.newPassword}
-                hint="At least 8 characters."
+                hint="Kamida 8 ta belgi."
             />
             <PasswordField
-                label="Confirm new password"
+                label="Yangi parolni takrorlang"
                 required
                 autoComplete="new-password"
                 maxLength={128}
@@ -111,7 +111,7 @@ export function PasswordForm({ user }) {
 
             <div className={styles.actions}>
                 <Button type="submit" loading={isPending}>
-                    {hasPassword ? 'Change password' : 'Set password'}
+                    {hasPassword ? 'Parolni oʻzgartirish' : 'Parol oʻrnatish'}
                 </Button>
             </div>
         </form>

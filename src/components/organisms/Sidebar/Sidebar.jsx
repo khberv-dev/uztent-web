@@ -15,17 +15,17 @@ export function Sidebar({ collapsed = false, onToggle }) {
     const streams = flattenPages(data)
 
     return (
-        <aside className={cn(styles.sidebar, collapsed && styles.collapsed)} aria-label="Live now">
+        <aside className={cn(styles.sidebar, collapsed && styles.collapsed)} aria-label="Hozir live’da">
             <div className={styles.header}>
                 {!collapsed && (
                     <Text as="h2" size="sm" weight="bold" className={styles.heading}>
-                        Live now
+                        Hozir live’da
                     </Text>
                 )}
                 {onToggle && (
                     <IconButton
                         icon={collapsed ? 'expandRight' : 'collapseLeft'}
-                        label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                        label={collapsed ? 'Yon panelni ochish' : 'Yon panelni yigʻish'}
                         size="sm"
                         onClick={onToggle}
                     />
@@ -33,7 +33,7 @@ export function Sidebar({ collapsed = false, onToggle }) {
             </div>
 
             {collapsed && (
-                <div className={styles.collapsedIcon} title="Live now">
+                <div className={styles.collapsedIcon} title="Hozir live’da">
                     <Icon name="broadcast" size={18} />
                 </div>
             )}
@@ -50,11 +50,11 @@ export function Sidebar({ collapsed = false, onToggle }) {
             )}
 
             {isError && !collapsed && (
-                <Text size="sm" tone="muted" className={styles.message}>Couldn’t load live streams.</Text>
+                <Text size="sm" tone="muted" className={styles.message}>Live streamlarni yuklab boʻlmadi.</Text>
             )}
 
             {!isPending && !isError && streams.length === 0 && !collapsed && (
-                <Text size="sm" tone="muted" className={styles.message}>No one is live right now.</Text>
+                <Text size="sm" tone="muted" className={styles.message}>Hozir hech kim live’da emas.</Text>
             )}
 
             {streams.length > 0 && (

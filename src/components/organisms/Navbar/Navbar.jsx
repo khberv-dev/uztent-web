@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router'
 import { Badge, Button, IconButton, Logo, Skeleton } from '@/components/atoms'
 import { SearchBar, UserMenu } from '@/components/molecules'
 import { displayName, useSignOut } from '@/features/auth'
+import { env } from '@/config/env'
 import { useMyLiveStream } from '@/features/streams'
 import { useMe } from '@/features/users'
 import { useIsAuthenticated } from '@/lib/session'
@@ -20,10 +21,12 @@ export function Navbar({ onToggleSidebar }) {
         <header className={styles.navbar}>
             <div className={styles.left}>
                 {onToggleSidebar && (
-                    <IconButton icon="menu" label="Toggle sidebar" onClick={onToggleSidebar} className={styles.menuButton} />
+                    <IconButton icon="menu" label="Yon panel" onClick={onToggleSidebar} className={styles.menuButton} />
                 )}
-                <Link to={paths.home} aria-label="Home">
+                <Link to={paths.home} aria-label="Bosh sahifa" className={styles.brand}>
                     <Logo />
+                    {/* VITE_SHOW_BETA_BADGE */}
+                    {env.showBetaBadge && <Badge variant="beta">Beta</Badge>}
                 </Link>
             </div>
 
@@ -35,24 +38,24 @@ export function Navbar({ onToggleSidebar }) {
                 {!authenticated ? (
                     // Live pages are public; signing in comes back to the current page
                     <Button as={Link} to={paths.auth} state={{ from: location.pathname }}>
-                        Log in
+                        Kirish
                     </Button>
                 ) : (
                     <>
                     {myStream && (
-                        <Link to={paths.dashboard.home} className={styles.liveLink} title="Manage your stream">
+                        <Link to={paths.dashboard.home} className={styles.liveLink} title="Streamni boshqarish">
                             <Badge variant="live">Live</Badge>
                         </Link>
                     )}
-                    <IconButton icon="bell" label="Notifications" />
+                    <IconButton icon="bell" label="Bildirishnomalar" />
                     {user ? (
                         <UserMenu
                             name={displayName(user)}
                             email={user.email}
                             items={[
-                                { icon: 'broadcast', label: 'Creator dashboard', onSelect: () => navigate(paths.dashboard.home) },
-                                { icon: 'video', label: 'My videos', onSelect: () => navigate(paths.dashboard.videos) },
-                                { icon: 'settings', label: 'Account settings', onSelect: () => navigate(paths.settings) },
+                                { icon: 'broadcast', label: 'Streamer paneli', onSelect: () => navigate(paths.dashboard.home) },
+                                { icon: 'video', label: 'Videolarim', onSelect: () => navigate(paths.dashboard.videos) },
+                                { icon: 'settings', label: 'Akkaunt sozlamalari', onSelect: () => navigate(paths.settings) },
                             ]}
                             onSignOut={signOut}
                         />

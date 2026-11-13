@@ -35,7 +35,7 @@ export function UserMenu({ name, email, avatarUrl, items = [], onSignOut }) {
                 className={styles.trigger}
                 aria-haspopup="menu"
                 aria-expanded={open}
-                aria-label="Open user menu"
+                aria-label="Foydalanuvchi menyusi"
                 onClick={() => setOpen((value) => !value)}
             >
                 <Avatar src={avatarUrl} name={name} size="sm" />
@@ -74,7 +74,7 @@ export function UserMenu({ name, email, avatarUrl, items = [], onSignOut }) {
                             onSignOut()
                         }}
                     >
-                        <Icon name="logout" size={18} /> Log out
+                        <Icon name="logout" size={18} /> Chiqish
                     </button>
                 </div>
             )}

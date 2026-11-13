@@ -41,12 +41,12 @@ export function CopyField({ label, value, secret = false, hint }) {
                         {secret && (
                             <IconButton
                                 icon={revealed ? 'eyeOff' : 'eye'}
-                                label={revealed ? `Hide ${label}` : `Show ${label}`}
+                                label={revealed ? `Yashirish: ${label}` : `Koʻrsatish: ${label}`}
                                 size="sm"
                                 onClick={() => setRevealed((v) => !v)}
                             />
                         )}
-                        <IconButton icon={copied ? 'check' : 'copy'} label={copied ? 'Copied' : `Copy ${label}`} size="sm" onClick={copy} />
+                        <IconButton icon={copied ? 'check' : 'copy'} label={copied ? 'Nusxalandi' : `Nusxalash: ${label}`} size="sm" onClick={copy} />
                     </span>
                 }
             />

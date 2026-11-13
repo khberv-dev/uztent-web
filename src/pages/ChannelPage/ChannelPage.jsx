@@ -33,9 +33,9 @@ export function ChannelPage() {
         return (
             <EmptyState
                 icon="alert"
-                title="Channel not found"
-                description="That isn’t a valid username."
-                action={<Button as={Link} to={paths.home}>Browse live streams</Button>}
+                title="Kanal topilmadi"
+                description="Bunday username boʻlishi mumkin emas."
+                action={<Button as={Link} to={paths.home}>Live streamlarni koʻrish</Button>}
             />
         )
     }
@@ -52,8 +52,8 @@ export function ChannelPage() {
     if (isError && channel === undefined) {
         return (
             <Alert>
-                {getErrorMessage(error, 'Couldn’t load this channel.')}{' '}
-                <Button variant="ghost" size="sm" onClick={() => refetch()}>Try again</Button>
+                {getErrorMessage(error, 'Kanalni yuklab boʻlmadi.')}{' '}
+                <Button variant="ghost" size="sm" onClick={() => refetch()}>Qayta urinish</Button>
             </Alert>
         )
     }
@@ -62,9 +62,9 @@ export function ChannelPage() {
         return (
             <EmptyState
                 icon="alert"
-                title="Channel not found"
-                description={`There’s no user called ${username}.`}
-                action={<Button as={Link} to={paths.home}>Browse live streams</Button>}
+                title="Kanal topilmadi"
+                description={`${username} nomli foydalanuvchi yoʻq.`}
+                action={<Button as={Link} to={paths.home}>Live streamlarni koʻrish</Button>}
             />
         )
     }
@@ -76,21 +76,21 @@ export function ChannelPage() {
                     <Avatar name={username} size="lg" />
                     <Heading level={2}>{username}</Heading>
                     <Text tone="muted">
-                        {isOwn ? 'You’re offline. Start streaming in your encoder to go live.' : `${username} isn’t live right now. This page will start playing when they go live.`}
+                        {isOwn ? 'Siz offline’siz. Live’ga chiqish uchun encoder’da streamni boshlang.' : `${username} hozir live’da emas. Live’ga chiqqanda bu sahifada stream oʻzi boshlanadi.`}
                     </Text>
                     <div className={styles.actions}>
                         {lastStream && (
-                            <Button as={Link} to={paths.vod(lastStream.id)}>Watch the recording</Button>
+                            <Button as={Link} to={paths.vod(lastStream.id)}>Yozuvni koʻrish</Button>
                         )}
                         {isOwn ? (
-                            <Button as={Link} to={paths.dashboard.home} variant="secondary">Stream manager</Button>
+                            <Button as={Link} to={paths.dashboard.home} variant="secondary">Stream boshqaruvi</Button>
                         ) : (
-                            <Button as={Link} to={paths.home} variant="secondary">Browse live streams</Button>
+                            <Button as={Link} to={paths.home} variant="secondary">Live streamlarni koʻrish</Button>
                         )}
                     </div>
                 </div>
                 {lastStream && authenticated && (
-                    <VodGrid userId={lastStream.userId} title="Past broadcasts" limit={8} hideWhenEmpty />
+                    <VodGrid userId={lastStream.userId} title="Oldingi streamlar" limit={8} hideWhenEmpty />
                 )}
             </div>
         )

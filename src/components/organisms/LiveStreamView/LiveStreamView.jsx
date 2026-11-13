@@ -34,18 +34,18 @@ export function LiveStreamView({ stream, name, isOwn = false }) {
                             <Text tone="primary" weight="semibold">{name}</Text>
                             <div className={styles.metaRow}>
                                 <Badge variant="live">Live</Badge>
-                                <Text size="sm" tone="muted">{formatCount(stream.viewers)} viewers</Text>
+                                <Text size="sm" tone="muted">{formatCount(stream.viewers)} tomoshabin</Text>
                                 <Text size="sm" tone="muted">·</Text>
                                 <Text size="sm" tone="muted">{formatDuration(stream.startedAt, new Date(now).toISOString())}</Text>
                             </div>
                         </div>
                     </div>
                     {isOwn && (
-                        <Button as={Link} to={paths.dashboard.home} variant="secondary">Manage stream</Button>
+                        <Button as={Link} to={paths.dashboard.home} variant="secondary">Streamni boshqarish</Button>
                     )}
                 </div>
 
-                {authenticated && <VodGrid userId={stream.userId} title="Past broadcasts" limit={8} hideWhenEmpty />}
+                {authenticated && <VodGrid userId={stream.userId} title="Oldingi streamlar" limit={8} hideWhenEmpty />}
             </div>
             <ChatPanel
                 streamId={stream.id}

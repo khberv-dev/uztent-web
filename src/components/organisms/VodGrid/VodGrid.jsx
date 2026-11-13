@@ -12,16 +12,16 @@ import styles from './VodGrid.module.css'
 function DeleteVodButton({ id }) {
     const { mutate, isPending, isError, error } = useDeleteVod()
     return (
-        <span title={isError ? getErrorMessage(error, 'Couldn’t delete.') : undefined}>
+        <span title={isError ? getErrorMessage(error, 'Oʻchirib boʻlmadi.') : undefined}>
             <ConfirmButton
                 size="sm"
                 variant="ghost"
-                confirmLabel="Delete"
+                confirmLabel="Oʻchirish"
                 loading={isPending}
                 onConfirm={() => mutate(id)}
-                aria-label="Delete video"
+                aria-label="Videoni oʻchirish"
             >
-                Delete
+                Oʻchirish
             </ConfirmButton>
         </span>
     )
@@ -33,7 +33,7 @@ function DeleteVodButton({ id }) {
  *
  * @param {{userId?: string, title?: string, limit?: number, excludeId?: string, emptyTitle?: string, emptyDescription?: string, hideWhenEmpty?: boolean}} props
  */
-export function VodGrid({ userId, title, limit = 20, excludeId, emptyTitle = 'No videos yet', emptyDescription, hideWhenEmpty = false }) {
+export function VodGrid({ userId, title, limit = 20, excludeId, emptyTitle = 'Hali videolar yoʻq', emptyDescription, hideWhenEmpty = false }) {
     const { data: me } = useMe()
     const mine = useMyVods({ limit, enabled: !userId })
     const theirs = useUserVods(userId, { limit })
@@ -49,8 +49,8 @@ export function VodGrid({ userId, title, limit = 20, excludeId, emptyTitle = 'No
 
             {isError && (
                 <Alert>
-                    {getErrorMessage(error, 'Couldn’t load videos.')}{' '}
-                    <Button variant="ghost" size="sm" onClick={() => refetch()}>Try again</Button>
+                    {getErrorMessage(error, 'Videolarni yuklab boʻlmadi.')}{' '}
+                    <Button variant="ghost" size="sm" onClick={() => refetch()}>Qayta urinish</Button>
                 </Alert>
             )}
 
@@ -72,7 +72,7 @@ export function VodGrid({ userId, title, limit = 20, excludeId, emptyTitle = 'No
                             lines={[name, formatDate(vod.startedAt)]}
                             thumbnailUrl={vod.previewUri}
                             hue={hueFromId(vod.id)}
-                            topLeft={!vod.videoUri ? <Badge variant="overlay">Processing</Badge> : null}
+                            topLeft={!vod.videoUri ? <Badge variant="overlay">Ishlanmoqda</Badge> : null}
                             bottomLeft={<Badge variant="overlay">{formatDuration(vod.startedAt, vod.endedAt)}</Badge>}
                             actions={isOwn ? <DeleteVodButton id={vod.id} /> : null}
                         />
@@ -83,7 +83,7 @@ export function VodGrid({ userId, title, limit = 20, excludeId, emptyTitle = 'No
             {hasNextPage && (
                 <div className={styles.more}>
                     <Button variant="secondary" loading={isFetchingNextPage} onClick={() => fetchNextPage()}>
-                        Show more
+                        Yana koʻrsatish
                     </Button>
                 </div>
             )}

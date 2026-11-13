@@ -15,9 +15,9 @@ function NotFound() {
     return (
         <EmptyState
             icon="alert"
-            title="Stream not found"
-            description="It may have ended, or the link is wrong."
-            action={<Button as={Link} to={paths.home}>Browse live streams</Button>}
+            title="Stream topilmadi"
+            description="U tugagan yoki link notoʻgʻri boʻlishi mumkin."
+            action={<Button as={Link} to={paths.home}>Live streamlarni koʻrish</Button>}
         />
     )
 }
@@ -42,7 +42,7 @@ export function StreamPage() {
         if (vod.data) return <Navigate to={paths.vod(id)} replace state={{ ended: true }} />
         return <NotFound />
     }
-    if (error && !stream) return <Alert>{getErrorMessage(error, 'Couldn’t load the stream.')}</Alert>
+    if (error && !stream) return <Alert>{getErrorMessage(error, 'Streamni yuklab boʻlmadi.')}</Alert>
 
     if (isPending) {
         return (

@@ -6,9 +6,9 @@ import { paths } from '@/routes/paths'
 import styles from './DashboardNav.module.css'
 
 const ITEMS = [
-    { to: paths.dashboard.home, icon: 'broadcast', label: 'Stream manager', end: true },
-    { to: paths.dashboard.videos, icon: 'video', label: 'Videos' },
-    { to: paths.dashboard.settings, icon: 'settings', label: 'Stream settings' },
+    { to: paths.dashboard.home, icon: 'broadcast', label: 'Stream boshqaruvi', end: true },
+    { to: paths.dashboard.videos, icon: 'video', label: 'Videolar' },
+    { to: paths.dashboard.settings, icon: 'settings', label: 'Stream sozlamalari' },
 ]
 
 /** Creator dashboard navigation. A side rail on desktop, a tab bar on phones. */
@@ -16,8 +16,8 @@ export function DashboardNav() {
     const { data: liveStream } = useMyLiveStream()
 
     return (
-        <nav className={styles.nav} aria-label="Creator dashboard">
-            <Text as="h2" size="sm" weight="bold" className={styles.heading}>Creator dashboard</Text>
+        <nav className={styles.nav} aria-label="Streamer paneli">
+            <Text as="h2" size="sm" weight="bold" className={styles.heading}>Streamer paneli</Text>
             <ul className={styles.list}>
                 {ITEMS.map((item) => (
                     <li key={item.to}>

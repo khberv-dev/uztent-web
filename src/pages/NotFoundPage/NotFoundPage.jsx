@@ -10,8 +10,8 @@ export function NotFoundPage() {
         <main className={styles.page}>
             <Logo size={48} />
             <Heading level={1}>404</Heading>
-            <Text tone="muted" size="lg">Sorry, that page doesn’t exist.</Text>
-            <Button size="lg" onClick={() => navigate(paths.home)}>Go home</Button>
+            <Text tone="muted" size="lg">Kechirasiz, bunday sahifa mavjud emas.</Text>
+            <Button size="lg" onClick={() => navigate(paths.home)}>Bosh sahifaga</Button>
         </main>
     )
 }

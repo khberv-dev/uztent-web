@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 npm install
-cp .env.example .env         # required: env.js throws at startup if a VITE_* var is missing
+cp .env.example .env         # required: env.js throws at startup if a required VITE_* var is missing
 npm run dev       # http://localhost:8080 (port is fixed: it must match the Google OAuth redirect URI)
 npm run build
 npm run preview   # also on 8080
@@ -21,6 +21,8 @@ No test runner is configured (Vitest would be the natural fit).
 
 ## Architecture
 
+- **UI language is Uzbek (Latin script)**, with no i18n layer: strings are written in Uzbek directly in the components. Words Uzbek users say in English stay English: stream, live, chat, video, link, username, email, moderator, ban/unban, slow mode, stream key, server, encoder, offline. Use `ʻ` (U+02BB) in oʻ/gʻ and `’` for the apostrophe in suffixes on English words (`live’da`, `encoder’da`). Dates and numbers use `Intl` with `'uz'` (`lib/format.js`). The API's messages are English: `getErrorMessage()` maps the documented ones to Uzbek (`API_MESSAGES` in `api/errors.js`). Code that branches on an API message must read the raw `error.response.data.message`, not the translated text.
+- **Env flags:** `VITE_SHOW_BETA_BADGE=true` shows a "Beta" label next to the navbar logo. Optional flags go through `flag()` in `config/env.js` (`true`/`1`/`yes`), and components read them from `env`, never from `import.meta.env`.
 - **Import alias:** `@/` → `src/` (set in `vite.config.js`).
 - **Components follow atomic design** in `src/components/{atoms,molecules,organisms,templates}`, then `src/pages`. Each component lives in its own folder (`Name/Name.jsx`, `Name.module.css`, `index.js`), and every level has a barrel `index.js`. Import from the barrel (`@/components/atoms`). Lower levels must not import from higher ones. Atoms are presentational and data-free. Organisms may call feature hooks (e.g. `Sidebar` uses `useRecommendedChannels`).
 - **Styling:** CSS Modules plus design tokens in `src/styles/tokens.css`. `html { font-size: 62.5% }`, so `1rem = 10px`. Use tokens (`var(--space-3)`, `var(--color-surface)`) instead of raw values. Join class names with `cn()` from `@/lib/cn`.

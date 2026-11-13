@@ -263,7 +263,7 @@ export function VideoPlayer({ src, live = false, poster, muted: startMuted = fal
             ref={containerRef}
             className={cn(styles.player, !showControls && styles.idle)}
             tabIndex={0}
-            aria-label={live ? 'Live video player' : 'Video player'}
+            aria-label={live ? 'Live video pleyer' : 'Video pleyer'}
             onKeyDown={handleKeyDown}
             onPointerMove={poke}
             onPointerDown={poke}
@@ -276,22 +276,22 @@ export function VideoPlayer({ src, live = false, poster, muted: startMuted = fal
 
             {status !== 'ready' ? (
                 <div className={styles.overlay} aria-live="polite">
-                    {status === 'loading' && <Spinner size="lg" label="Loading video" />}
+                    {status === 'loading' && <Spinner size="lg" label="Video yuklanmoqda" />}
                     {status === 'waiting' && (
                         <>
-                            <Spinner size="lg" label="Waiting for video" />
-                            <Text weight="semibold">Waiting for the stream to start sending video…</Text>
+                            <Spinner size="lg" label="Video kutilmoqda" />
+                            <Text weight="semibold">Stream video yuborishini kutyapmiz…</Text>
                         </>
                     )}
                     {status === 'error' && (
                         <>
                             <Icon name="alert" size={32} />
-                            <Text weight="semibold">This video can’t be played.</Text>
+                            <Text weight="semibold">Bu videoni ijro etib boʻlmaydi.</Text>
                         </>
                     )}
                 </div>
             ) : media.buffering ? (
-                <div className={styles.overlay} aria-hidden="true"><Spinner size="lg" label="Buffering" /></div>
+                <div className={styles.overlay} aria-hidden="true"><Spinner size="lg" label="Yuklanmoqda" /></div>
             ) : media.paused ? (
                 <div className={styles.overlay} aria-hidden="true">
                     <span className={styles.bigPlay}><Icon name="play" size={36} /></span>

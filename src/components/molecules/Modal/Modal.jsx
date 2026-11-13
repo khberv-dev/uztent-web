@@ -32,7 +32,7 @@ export function Modal({ open, onClose, title, children, className }) {
                 <div className={styles.content}>
                     <header className={styles.header}>
                         <Heading level={3} id={titleId}>{title}</Heading>
-                        <IconButton icon="close" label="Close" onClick={onClose} />
+                        <IconButton icon="close" label="Yopish" onClick={onClose} />
                     </header>
                     <div className={styles.body}>{children}</div>
                 </div>

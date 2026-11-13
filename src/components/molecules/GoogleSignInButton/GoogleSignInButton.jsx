@@ -3,7 +3,7 @@ import { redirectToGoogle } from '@/lib/googleOAuth'
 import styles from './GoogleSignInButton.module.css'
 
 /** @param {{returnTo?: string, loading?: boolean, children?: React.ReactNode}} props */
-export function GoogleSignInButton({ returnTo, loading = false, children = 'Continue with Google' }) {
+export function GoogleSignInButton({ returnTo, loading = false, children = 'Google orqali davom etish' }) {
     return (
         <Button
             variant="outline"

@@ -18,8 +18,8 @@ export function StreamKeyCard() {
         onSuccess: () =>
             setNotice(
                 hadKey
-                    ? 'New key generated. Paste it into your encoder: the old key no longer works for new broadcasts.'
-                    : 'Stream key generated. Paste the server and key into your encoder.',
+                    ? 'Yangi key yaratildi. Uni encoder’ga qoʻying: eski key yangi streamlar uchun endi ishlamaydi.'
+                    : 'Stream key yaratildi. Server va key’ni encoder’ga qoʻying.',
             ),
     })
 
@@ -27,7 +27,7 @@ export function StreamKeyCard() {
         <Card className={styles.card}>
             <div className={styles.header}>
                 <Heading level={3}>Stream key</Heading>
-                <Text tone="muted">Your encoder connects with these. The key stays the same between streams.</Text>
+                <Text tone="muted">Encoder shular orqali ulanadi. Key streamlar orasida oʻzgarmaydi.</Text>
             </div>
 
             {isPending && (
@@ -39,19 +39,19 @@ export function StreamKeyCard() {
 
             {isError && (
                 <Alert>
-                    {getErrorMessage(error, 'Couldn’t load your stream key.')}{' '}
-                    <Button variant="ghost" size="sm" onClick={() => refetch()}>Try again</Button>
+                    {getErrorMessage(error, 'Stream key’ni yuklab boʻlmadi.')}{' '}
+                    <Button variant="ghost" size="sm" onClick={() => refetch()}>Qayta urinish</Button>
                 </Alert>
             )}
 
             {notice && <Alert variant="success">{notice}</Alert>}
-            {generate.isError && <Alert>{getErrorMessage(generate.error, 'Couldn’t generate a stream key.')}</Alert>}
+            {generate.isError && <Alert>{getErrorMessage(generate.error, 'Stream key yaratib boʻlmadi.')}</Alert>}
 
             {settings === null && (
                 <div className={styles.empty}>
-                    <Text>You don’t have a stream key yet. Your encoder needs one to connect.</Text>
+                    <Text>Sizda hali stream key yoʻq. Encoder ulanishi uchun u kerak.</Text>
                     <Button loading={generate.isPending} onClick={() => generate.mutate()}>
-                        Generate stream key
+                        Stream key yaratish
                     </Button>
                 </div>
             )}
@@ -68,23 +68,23 @@ export function StreamKeyCard() {
                         label="Stream key"
                         value={settings.encoderStreamKey}
                         secret
-                        hint="Never share your key: anyone with it can stream to your channel."
+                        hint="Key’ni hech kimga bermang: unga ega boʻlgan har kim kanalingizga stream qila oladi."
                     />
                     <div className={styles.footer}>
                         <Text size="sm" tone="muted">
-                            {settings.updatedAt !== settings.createdAt ? 'Last reset' : 'Created'} {formatTimeAgo(settings.updatedAt)}
+                            {settings.updatedAt !== settings.createdAt ? 'Oxirgi yangilanish:' : 'Yaratilgan:'} {formatTimeAgo(settings.updatedAt)}
                         </Text>
                         <ConfirmButton
                             variant="secondary"
                             size="sm"
-                            confirmLabel="Reset key"
+                            confirmLabel="Key’ni yangilash"
                             loading={generate.isPending}
                             onConfirm={() => {
                                 setNotice(null)
                                 generate.mutate()
                             }}
                         >
-                            Reset key
+                            Key’ni yangilash
                         </ConfirmButton>
                     </div>
                 </>

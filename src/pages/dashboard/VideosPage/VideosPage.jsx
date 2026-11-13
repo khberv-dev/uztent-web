@@ -7,13 +7,13 @@ export function VideosPage() {
         <div className={styles.page}>
             <header className={styles.header}>
                 <div>
-                    <Heading level={1}>Videos</Heading>
-                    <Text tone="muted" size="lg">Recordings of your past streams.</Text>
+                    <Heading level={1}>Videolar</Heading>
+                    <Text tone="muted" size="lg">Oldingi streamlaringiz yozuvlari.</Text>
                 </div>
             </header>
             <VodGrid
-                emptyTitle="No recordings yet"
-                emptyDescription="When you end a stream, its recording shows up here."
+                emptyTitle="Hali yozuvlar yoʻq"
+                emptyDescription="Streamni tugatganingizda, uning yozuvi shu yerda paydo boʻladi."
             />
         </div>
     )

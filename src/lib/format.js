@@ -1,6 +1,6 @@
-const compact = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 })
-const relative = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
-const dateFormat = new Intl.DateTimeFormat('en', { dateStyle: 'medium' })
+const compact = new Intl.NumberFormat('uz', { notation: 'compact', maximumFractionDigits: 1 })
+const relative = new Intl.RelativeTimeFormat('uz', { numeric: 'auto' })
+const dateFormat = new Intl.DateTimeFormat('uz', { dateStyle: 'medium' })
 
 export function formatCount(count) {
     return compact.format(count)
@@ -21,7 +21,7 @@ export function formatTimeAgo(iso, now = Date.now()) {
     for (const [unit, size] of UNITS) {
         if (Math.abs(seconds) >= size) return relative.format(Math.round(seconds / size), unit)
     }
-    return 'just now'
+    return 'hozirgina'
 }
 
 /** Elapsed time between two instants as "1:02:05" or "12:05". */

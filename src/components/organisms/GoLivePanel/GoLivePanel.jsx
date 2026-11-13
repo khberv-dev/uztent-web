@@ -11,7 +11,7 @@ import { paths } from '@/routes/paths'
 import styles from './GoLivePanel.module.css'
 
 const TITLE_MAX = 140
-const timeFormat = new Intl.DateTimeFormat('en', { hour: 'numeric', minute: '2-digit' })
+const timeFormat = new Intl.DateTimeFormat('uz', { hour: '2-digit', minute: '2-digit' })
 
 /** Ticks every second on its own, so only this value re-renders. */
 function LiveTime({ startedAt }) {
@@ -74,24 +74,24 @@ function StreamStats({ stream, loading }) {
         <div className={styles.stats}>
             <StatCard
                 icon="clock"
-                label="Live time"
+                label="Live vaqti"
                 active={live}
                 value={live ? <LiveTime startedAt={stream.startedAt} /> : 'Offline'}
-                hint={live ? `Started at ${timeFormat.format(new Date(stream.startedAt))}` : 'Start streaming in your encoder to go live'}
+                hint={live ? `Boshlangan: ${timeFormat.format(new Date(stream.startedAt))}` : 'Live’ga chiqish uchun encoder’da streamni boshlang'}
             />
             <StatCard
                 icon="eye"
-                label="Viewers"
+                label="Tomoshabinlar"
                 active={live}
                 value={live ? formatCount(stream.viewers) : '—'}
-                hint="Watching now, across all qualities"
+                hint="Hozir koʻrayotganlar (barcha sifatlarda)"
             />
             <StatCard
                 icon="broadcast"
-                label="Peak viewers"
+                label="Eng koʻp tomoshabin"
                 active={live}
                 value={live && peak !== null ? formatCount(peak) : '—'}
-                hint="Highest viewer count this stream (since this page was opened in this tab)"
+                hint="Shu streamdagi eng yuqori tomoshabin soni (sahifa shu tabda ochilgandan beri)"
             />
         </div>
     )
@@ -126,7 +126,7 @@ function CopyStreamLink({ stream }) {
             title={url}
             onClick={copy}
         >
-            {state === 'copied' ? 'Copied!' : state === 'failed' ? 'Couldn’t copy' : 'Copy link'}
+            {state === 'copied' ? 'Nusxalandi!' : state === 'failed' ? 'Nusxalab boʻlmadi' : 'Linkni nusxalash'}
         </Button>
     )
 }
@@ -140,7 +140,7 @@ function LiveStatus({ stream }) {
                 <Heading level={3} className={styles.statusTitle}>{stream.title}</Heading>
             </div>
             <div className={styles.statusFooter}>
-                <Text size="sm" tone="muted">To end the stream, stop streaming in your encoder.</Text>
+                <Text size="sm" tone="muted">Streamni tugatish uchun encoder’da streamni toʻxtating.</Text>
                 <CopyStreamLink stream={stream} />
             </div>
         </Card>
@@ -152,14 +152,14 @@ function OfflineStatus({ hasKey }) {
         <Card padding="md" className={styles.statusCard}>
             <div className={styles.offline}>
                 <Icon name="broadcast" size={36} />
-                <Heading level={3}>You’re offline</Heading>
+                <Heading level={3}>Siz offline’siz</Heading>
                 <Text tone="muted">
                     {hasKey
-                        ? 'Start streaming in your encoder and you’ll go live automatically. This page updates on its own.'
-                        : 'You need a stream key to go live.'}
+                        ? 'Encoder’da streamni boshlang, avtomatik ravishda live’ga chiqasiz. Sahifa oʻzi yangilanadi.'
+                        : 'Live’ga chiqish uchun stream key kerak.'}
                 </Text>
                 {!hasKey && (
-                    <Button as={Link} to={paths.dashboard.settings}>Get a stream key</Button>
+                    <Button as={Link} to={paths.dashboard.settings}>Stream key olish</Button>
                 )}
             </div>
         </Card>
@@ -178,7 +178,7 @@ function StreamTitleForm({ settings }) {
             setSaved(true)
         },
         onError: (err) => {
-            if (getErrorStatus(err) === 404) return setError('Generate a stream key in stream settings first.')
+            if (getErrorStatus(err) === 404) return setError('Avval stream sozlamalarida stream key yarating.')
             const result = getValidationErrors(err, ['title'])
             setError(result.fieldErrors.title ?? result.formError)
         },
@@ -189,8 +189,8 @@ function StreamTitleForm({ settings }) {
 
     function handleSubmit(event) {
         event.preventDefault()
-        if (!trimmed) return setError('Give your stream a title.')
-        if (trimmed.length > TITLE_MAX) return setError(`Title must be ${TITLE_MAX} characters or fewer.`)
+        if (!trimmed) return setError('Streamga nom bering.')
+        if (trimmed.length > TITLE_MAX) return setError(`Nom ${TITLE_MAX} ta belgidan oshmasligi kerak.`)
         if (!dirty) return undefined
         setError(null)
         mutate(trimmed)
@@ -199,21 +199,21 @@ function StreamTitleForm({ settings }) {
     return (
         <Card as="form" className={styles.card} onSubmit={handleSubmit} noValidate>
             <div className={styles.header}>
-                <Heading level={3}>Stream title</Heading>
-                <Text tone="muted">Used for your next broadcasts. Changing it while live renames the current stream.</Text>
+                <Heading level={3}>Stream nomi</Heading>
+                <Text tone="muted">Keyingi streamlaringiz uchun ishlatiladi. Live paytida oʻzgartirsangiz, joriy stream nomi ham oʻzgaradi.</Text>
             </div>
-            {saved && <Alert variant="success">Title saved.</Alert>}
+            {saved && <Alert variant="success">Nom saqlandi.</Alert>}
             {disabled && (
                 <Alert variant="info">
-                    Generate a stream key first to set a title.{' '}
-                    <Link to={paths.dashboard.settings} className={styles.link}>Go to stream settings</Link>
+                    Nom qoʻyish uchun avval stream key yarating.{' '}
+                    <Link to={paths.dashboard.settings} className={styles.link}>Stream sozlamalariga oʻtish</Link>
                 </Alert>
             )}
             <FormField
-                label="Title"
+                label="Nom"
                 required
                 disabled={disabled}
-                placeholder="What are you streaming today?"
+                placeholder="Bugun nima stream qilyapsiz?"
                 maxLength={TITLE_MAX}
                 value={title}
                 onChange={(event) => {
@@ -226,7 +226,7 @@ function StreamTitleForm({ settings }) {
             />
             <div className={styles.actions}>
                 <Button type="submit" loading={isPending} disabled={disabled || !dirty}>
-                    Save title
+                    Nomni saqlash
                 </Button>
             </div>
         </Card>
@@ -246,8 +246,8 @@ export function GoLivePanel() {
             {liveQuery.isPending && <Skeleton style={{ aspectRatio: '16 / 9', width: '100%' }} />}
             {liveQuery.isError && (
                 <Alert>
-                    {getErrorMessage(liveQuery.error, 'Couldn’t check whether you’re live.')}{' '}
-                    <Button variant="ghost" size="sm" onClick={() => liveQuery.refetch()}>Try again</Button>
+                    {getErrorMessage(liveQuery.error, 'Live holatingizni tekshirib boʻlmadi.')}{' '}
+                    <Button variant="ghost" size="sm" onClick={() => liveQuery.refetch()}>Qayta urinish</Button>
                 </Alert>
             )}
             {liveQuery.isSuccess && (stream ? <LiveStatus stream={stream} /> : <OfflineStatus hasKey={Boolean(settingsQuery.data)} />)}
