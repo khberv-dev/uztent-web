@@ -20,10 +20,17 @@
     flex: 1 1 24rem;
 }
 
-.checking {
+.fieldRow {
+    display: grid;
+    grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: start;
+}
+
+.codeHeader {
     display: flex;
-    align-items: center;
-    gap: var(--space-2);
+    flex-direction: column;
+    gap: var(--space-1);
 }
 
 .addForm {
@@ -44,8 +51,12 @@
 .actions {
     display: flex;
     justify-content: flex-end;
+    flex-wrap: wrap;
     gap: var(--space-2);
 }
+
+/* Resend sits on the left, away from the confirm button */
+.resend { margin-right: auto; }
 
 .list {
     display: flex;
@@ -81,4 +92,9 @@
     flex: 1;
     flex-direction: column;
     min-width: 0;
+}
+
+@media (max-width: 480px) {
+    .fieldRow { grid-template-columns: 1fr; }
+    .resend { margin-right: 0; width: 100%; }
 }

@@ -1,117 +1,241 @@
 import { useState } from 'react'
 import { getErrorMessage, getErrorStatus, getValidationErrors } from '@/api/errors'
-import { Button, Heading, Icon, Skeleton, Spinner, Text } from '@/components/atoms'
+import { Button, Heading, Icon, Skeleton, Text } from '@/components/atoms'
 import { Alert, ConfirmButton, FormField } from '@/components/molecules'
-import { cardLabel, MAX_CARDS, useCardBind, useDeleteCard, useSavedCards, useStartCardBind } from '@/features/payments'
-import { formatDate } from '@/lib/format'
+import { cardLabel, MAX_CARDS, useAddCard, useConfirmCardBind, useDeleteCard, useSavedCards } from '@/features/payments'
+import { formatDate, formatTime } from '@/lib/format'
 import styles from './SavedCards.module.css'
 
+const PAN_DIGITS = 16
 const PHONE_DIGITS = 9 // after +998
+const CARD_FIELDS = ['pan', 'expiry', 'phone']
 
-/** Result of returning from Multicard's card form (?bindId=…&result=success|declined). */
-function BindResult({ bindId, result, onDismiss }) {
-    const declined = result === 'declined'
-    // Even on "declined" the binding is checked once: the redirect isn't proof either way
-    const { data, error, isError, polling } = useCardBind(bindId)
+/** "8600123412341234" → "8600 1234 1234 1234" */
+const groupPan = (digits) => digits.replace(/(\d{4})(?=\d)/g, '$1 ')
+/** "0628" → "06/28" */
+const slashExpiry = (digits) => (digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits)
+/** "901234567" → "90 123 45 67" */
+const groupPhone = (digits) => digits.replace(/^(\d{2})(\d{3})(\d{2})(\d{2})$/, '$1 $2 $3 $4')
 
-    if (data?.status === 'active') {
-        return (
-            <Alert variant="success">
-                {data.card ? `${cardLabel(data.card)} saqlandi.` : 'Karta saqlandi.'} Endi donatlarni bir bosishda yuborishingiz mumkin.{' '}
-                <Button variant="ghost" size="sm" onClick={onDismiss}>Yopish</Button>
-            </Alert>
-        )
-    }
-    if (isError) {
-        return (
-            <Alert>
-                {getErrorStatus(error) === 409 || getErrorStatus(error) === 404
-                    ? getErrorMessage(error)
-                    : getErrorMessage(error, 'Karta holatini tekshirib boʻlmadi.')}{' '}
-                <Button variant="ghost" size="sm" onClick={onDismiss}>Yopish</Button>
-            </Alert>
-        )
-    }
-    if (declined && data && data.status !== 'active') {
-        return (
-            <Alert>
-                Karta qoʻshilmadi: Multicard kartani rad etdi yoki forma yopildi.{' '}
-                <Button variant="ghost" size="sm" onClick={onDismiss}>Yopish</Button>
-            </Alert>
-        )
-    }
-    if (polling || !data) {
-        return (
-            <div className={styles.checking} role="status">
-                <Spinner size="sm" /> <Text size="sm">Karta tekshirilmoqda…</Text>
-            </div>
-        )
-    }
-    return (
-        <Alert variant="info">
-            Karta hali tasdiqlanmadi. Formani oxirigacha toʻldirgan boʻlsangiz, sahifani birozdan soʻng yangilang.{' '}
-            <Button variant="ghost" size="sm" onClick={onDismiss}>Yopish</Button>
-        </Alert>
-    )
+/** Client-side check of MM/YY as printed on the card: a real month, not already past. */
+function expiryError(digits) {
+    if (digits.length !== 4) return 'Amal qilish muddatini OO/YY koʻrinishida kiriting.'
+    const month = Number(digits.slice(0, 2))
+    const year = 2000 + Number(digits.slice(2))
+    if (month < 1 || month > 12) return 'Oy 01 dan 12 gacha boʻlishi kerak.'
+    const now = new Date()
+    if (year < now.getFullYear() || (year === now.getFullYear() && month < now.getMonth() + 1)) return 'Karta muddati tugagan.'
+    return null
 }
 
-/** Phone number, then Multicard's card form (same tab; Multicard brings the user back here). */
-function AddCardForm({ onCancel }) {
-    const [phone, setPhone] = useState('')
-    const [phoneError, setPhoneError] = useState(null)
-    const start = useStartCardBind({
-        onSuccess: ({ formUrl }) => window.location.assign(formUrl),
-        onError: (error) => setPhoneError(getValidationErrors(error, ['phone']).fieldErrors.phone ?? null),
+/** Step 1: card number, expiry and the card's SMS phone. Nothing here is stored or logged. */
+function CardDetailsStep({ initial, error: initialError, onCancel, onSent }) {
+    const [pan, setPan] = useState(initial?.pan ?? '')
+    const [expiry, setExpiry] = useState(initial?.expiry ?? '')
+    const [phone, setPhone] = useState(initial?.phone ?? '')
+    const [fieldErrors, setFieldErrors] = useState({})
+    const [formError, setFormError] = useState(initialError ?? null)
+    const add = useAddCard({
+        onMutate: () => setFormError(null),
+        onSuccess: (binding) => onSent(binding, { pan, expiry, phone }),
+        onError: (error) => {
+            if (getErrorStatus(error) === 400) {
+                const { fieldErrors: apiFieldErrors } = getValidationErrors(error, CARD_FIELDS)
+                if (error.response?.data?.message === 'The card has expired') apiFieldErrors.expiry = 'Karta muddati tugagan.'
+                if (Object.keys(apiFieldErrors).length) {
+                    setFieldErrors(apiFieldErrors)
+                    return
+                }
+            }
+            setFormError(getErrorMessage(error, 'Kartani qoʻshib boʻlmadi.'))
+        },
     })
-    const formError = start.isError && !phoneError ? getErrorMessage(start.error, 'Karta qoʻshishni boshlab boʻlmadi.') : null
+
+    function clearError(field) {
+        setFieldErrors((errors) => ({ ...errors, [field]: null }))
+    }
 
     function handleSubmit(event) {
         event.preventDefault()
-        if (phone.length !== PHONE_DIGITS) {
-            setPhoneError('Telefon raqamini toʻliq kiriting: 9 ta raqam.')
-            return
+        const errors = {
+            pan: pan.length === PAN_DIGITS ? null : 'Karta raqamini toʻliq kiriting: 16 ta raqam.',
+            expiry: expiryError(expiry),
+            phone: phone.length === PHONE_DIGITS ? null : 'Telefon raqamini toʻliq kiriting: 9 ta raqam.',
         }
-        setPhoneError(null)
-        start.mutate(`998${phone}`)
+        setFieldErrors(errors)
+        if (Object.values(errors).some(Boolean)) return
+        add.mutate({ pan, expiry: slashExpiry(expiry), phone: `998${phone}` })
     }
 
     return (
-        <form className={styles.addForm} onSubmit={handleSubmit} noValidate>
+        <form className={styles.addForm} onSubmit={handleSubmit} noValidate autoComplete="on">
             <FormField
-                leftSlot={<span className={styles.prefix}>+998</span>}
-                label="Kartaga ulangan telefon raqami"
-                type="tel"
+                label="Karta raqami"
                 inputMode="numeric"
-                autoComplete="tel-national"
-                placeholder="90 123 45 67"
-                value={phone}
+                autoComplete="cc-number"
+                placeholder="8600 0000 0000 0000"
+                value={groupPan(pan)}
                 onChange={(event) => {
-                    setPhone(event.target.value.replace(/\D/g, '').replace(/^998(?=\d{9})/, '').slice(0, PHONE_DIGITS))
-                    setPhoneError(null)
+                    setPan(event.target.value.replace(/\D/g, '').slice(0, PAN_DIGITS))
+                    clearError('pan')
                 }}
-                error={phoneError}
+                error={fieldErrors.pan}
                 autoFocus
             />
+            <div className={styles.fieldRow}>
+                <FormField
+                    label="Amal qilish muddati"
+                    inputMode="numeric"
+                    autoComplete="cc-exp"
+                    placeholder="OO/YY"
+                    value={slashExpiry(expiry)}
+                    onChange={(event) => {
+                        setExpiry(event.target.value.replace(/\D/g, '').slice(0, 4))
+                        clearError('expiry')
+                    }}
+                    error={fieldErrors.expiry}
+                />
+                <FormField
+                    leftSlot={<span className={styles.prefix}>+998</span>}
+                    label="Kartaga ulangan telefon"
+                    type="tel"
+                    inputMode="numeric"
+                    autoComplete="tel-national"
+                    placeholder="90 123 45 67"
+                    value={phone}
+                    onChange={(event) => {
+                        setPhone(event.target.value.replace(/\D/g, '').replace(/^998(?=\d{9})/, '').slice(0, PHONE_DIGITS))
+                        clearError('phone')
+                    }}
+                    error={fieldErrors.phone}
+                />
+            </div>
             <Text size="sm" tone="muted">
-                Karta raqamini Multicard sahifasida kiritasiz. uztent faqat kartaning yashirilgan raqamini saqlaydi.
+                Uzcard va Humo. Multicard shu telefonga SMS kod yuboradi. uztent karta raqamini saqlamaydi, faqat yashirilgan raqamni koʻrsatadi.
             </Text>
             {formError && <Alert>{formError}</Alert>}
             <div className={styles.actions}>
-                <Button type="button" variant="ghost" onClick={onCancel} disabled={start.isPending || start.isSuccess}>Bekor qilish</Button>
-                <Button type="submit" loading={start.isPending || start.isSuccess}>Davom etish</Button>
+                <Button type="button" variant="ghost" onClick={onCancel} disabled={add.isPending}>Bekor qilish</Button>
+                <Button type="submit" loading={add.isPending}>Kod yuborish</Button>
+            </div>
+        </form>
+    )
+}
+
+/** Step 2: the SMS code Multicard sent to the card's phone. */
+function CodeStep({ binding, card, onBack, onRestart, onResent, onSaved }) {
+    const [otp, setOtp] = useState('')
+    const [error, setError] = useState(null)
+    const confirm = useConfirmCardBind({
+        onMutate: () => setError(null),
+        onSuccess: onSaved,
+        onError: (err) => {
+            const status = getErrorStatus(err)
+            // The binding is gone: expired / unknown (404), linked elsewhere (409), too many wrong codes (429)
+            if ([404, 409, 429].includes(status)) onRestart(getErrorMessage(err))
+            else setError(getErrorMessage(err, 'Kodni tasdiqlab boʻlmadi.'))
+        },
+    })
+    // Resending is a new binding (POST /payments/cards again with the same card)
+    const resend = useAddCard({
+        onMutate: () => setError(null),
+        onSuccess: (next) => {
+            setOtp('')
+            onResent(next)
+        },
+        onError: (err) => setError(getErrorMessage(err, 'Kodni qayta yuborib boʻlmadi.')),
+    })
+
+    function handleSubmit(event) {
+        event.preventDefault()
+        if (!/^\d{4,8}$/.test(otp)) {
+            setError('SMS koddagi raqamlarni kiriting.')
+            return
+        }
+        confirm.mutate({ bindId: binding.bindId, otp })
+    }
+
+    const busy = confirm.isPending || resend.isPending
+
+    return (
+        <form className={styles.addForm} onSubmit={handleSubmit} noValidate>
+            <div className={styles.codeHeader}>
+                <Text weight="semibold">{cardLabel(binding)}</Text>
+                <Text size="sm" tone="muted">
+                    +998 {groupPhone(card.phone)} raqamiga SMS kod yuborildi. Kod {formatTime(binding.expiresAt)} gacha amal qiladi.
+                </Text>
+            </div>
+            <FormField
+                label="SMS kod"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                maxLength={8}
+                value={otp}
+                onChange={(event) => {
+                    setOtp(event.target.value.replace(/\D/g, '').slice(0, 8))
+                    setError(null)
+                }}
+                error={error}
+                autoFocus
+            />
+            <div className={styles.actions}>
+                <Button type="button" variant="ghost" className={styles.resend} onClick={() => resend.mutate({ ...card, phone: `998${card.phone}`, expiry: slashExpiry(card.expiry) })} loading={resend.isPending} disabled={confirm.isPending}>
+                    Kodni qayta yuborish
+                </Button>
+                <Button type="button" variant="ghost" onClick={onBack} disabled={busy}>Orqaga</Button>
+                <Button type="submit" loading={confirm.isPending} disabled={resend.isPending}>Tasdiqlash</Button>
             </div>
         </form>
     )
 }
 
 /**
- * The user's saved cards (for one-click donations): list, remove, add through Multicard's form.
- * @param {{bindId?: string | null, bindResult?: string | null, onBindDismiss?: () => void}} props
- *   bindId / bindResult: from the return URL after the card form
+ * Adding a card in two steps. The typed card details stay in this component's state only (so "Back"
+ * and "Resend" don't make the user retype them) and are dropped when it unmounts.
  */
-export function SavedCards({ bindId, bindResult, onBindDismiss }) {
+function AddCardForm({ onCancel, onSaved }) {
+    const [card, setCard] = useState(null)
+    const [binding, setBinding] = useState(null)
+    const [restartError, setRestartError] = useState(null)
+
+    if (!binding) {
+        return (
+            <CardDetailsStep
+                key={restartError ?? 'details'}
+                initial={card}
+                error={restartError}
+                onCancel={onCancel}
+                onSent={(next, details) => {
+                    setCard(details)
+                    setBinding(next)
+                    setRestartError(null)
+                }}
+            />
+        )
+    }
+    return (
+        <CodeStep
+            binding={binding}
+            card={card}
+            onBack={() => setBinding(null)}
+            onRestart={(message) => {
+                setBinding(null)
+                setRestartError(message)
+            }}
+            onResent={setBinding}
+            onSaved={onSaved}
+        />
+    )
+}
+
+/**
+ * The user's saved cards (for one-click donations): list, remove, add (number, expiry, phone, then SMS code).
+ * @param {{startAdding?: boolean}} props startAdding: open the add form right away (the /settings/cards link)
+ */
+export function SavedCards({ startAdding = false }) {
     const cards = useSavedCards()
-    const [adding, setAdding] = useState(false)
+    const [adding, setAdding] = useState(startAdding)
+    const [saved, setSaved] = useState(null)
     const [deleteError, setDeleteError] = useState(null)
     const remove = useDeleteCard({
         onMutate: () => setDeleteError(null),
@@ -127,14 +251,30 @@ export function SavedCards({ bindId, bindResult, onBindDismiss }) {
                     <Text tone="muted">Saqlangan karta bilan donat Multicard sahifasini ochmasdan yuboriladi.</Text>
                 </div>
                 {!adding && cards.isSuccess && (
-                    <Button variant="secondary" leftIcon={<Icon name="wallet" size={18} />} onClick={() => setAdding(true)} disabled={full} title={full ? `Koʻpi bilan ${MAX_CARDS} ta karta` : undefined}>
+                    <Button variant="secondary" leftIcon={<Icon name="wallet" size={18} />} onClick={() => {
+                        setSaved(null)
+                        setAdding(true)
+                    }} disabled={full} title={full ? `Koʻpi bilan ${MAX_CARDS} ta karta` : undefined}>
                         Karta qoʻshish
                     </Button>
                 )}
             </div>
 
-            {bindId && <BindResult bindId={bindId} result={bindResult} onDismiss={onBindDismiss} />}
-            {adding && <AddCardForm onCancel={() => setAdding(false)} />}
+            {saved && (
+                <Alert variant="success">
+                    {cardLabel(saved)} saqlandi. Endi donatlarni bir bosishda yuborishingiz mumkin.{' '}
+                    <Button variant="ghost" size="sm" onClick={() => setSaved(null)}>Yopish</Button>
+                </Alert>
+            )}
+            {adding && (
+                <AddCardForm
+                    onCancel={() => setAdding(false)}
+                    onSaved={(card) => {
+                        setAdding(false)
+                        setSaved(card)
+                    }}
+                />
+            )}
             {deleteError && <Alert>{deleteError}</Alert>}
 
             {cards.isPending && [0, 1].map((i) => <Skeleton key={i} style={{ height: '4.8rem' }} />)}

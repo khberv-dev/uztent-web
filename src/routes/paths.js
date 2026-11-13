@@ -4,7 +4,7 @@ export const paths = {
     auth: '/auth',
     googleCallback: '/auth/google',
     settings: '/settings', // account: profile, password, saved cards
-    settingsCards: '/settings/cards', // Multicard's card form returns here (the API's CARD_BIND_RETURN_URL)
+    settingsCards: '/settings/cards', // settings scrolled to the cards, with the add-card form open
     channel: (username = ':username') => `/w/${username}`, // a user's live stream by username
     stream: (id = ':id') => `/streams/${id}`,
     vod: (id = ':id') => `/vods/${id}`,

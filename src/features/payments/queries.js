@@ -1,7 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { getErrorStatus } from '@/api/errors'
 import { paymentsApi } from '@/api/payments'
-import { isUuid } from '@/lib/format'
 import { useIsAuthenticated } from '@/lib/session'
 import { paymentKeys } from './keys'
 
@@ -17,37 +15,23 @@ export function useSavedCards({ enabled = true } = {}) {
     })
 }
 
-/** Starts binding; the caller sends the user to `formUrl`. */
-export function useStartCardBind(options) {
-    return useMutation({ mutationFn: (phone) => paymentsApi.startBind(phone), ...options })
+/** Step 1 of adding a card: sends {pan, expiry, phone}; Multicard texts a code. Resolves to the binding. */
+export function useAddCard(options) {
+    return useMutation({ mutationFn: (card) => paymentsApi.addCard(card), ...options })
 }
 
-const BIND_POLL_MS = 1500
-const BIND_MAX_POLLS = 20 // ~30 s, as the API's docs suggest
-
-const bindStillPolling = (state) => state?.data?.status === 'pending' && state.dataUpdateCount < BIND_MAX_POLLS
-
-/**
- * After the card form: polls GET /payments/cards/bind/:bindId until the card is saved (`active`).
- * Multicard's callback and this poll race; whichever comes first saves the card. 404 (expired) and
- * 409 (card linked to another account) are final, so they aren't retried.
- */
-export function useCardBind(bindId) {
+/** Step 2: the SMS code. The saved card goes to the top of the list (newest first). */
+export function useConfirmCardBind(options) {
     const queryClient = useQueryClient()
-    const query = useQuery({
-        queryKey: paymentKeys.bind(bindId),
-        queryFn: async ({ signal }) => {
-            const result = await paymentsApi.bindStatus(bindId, signal)
-            if (result.status === 'active') queryClient.invalidateQueries({ queryKey: paymentKeys.cards() })
-            return result
+    return useMutation({
+        mutationFn: ({ bindId, otp }) => paymentsApi.confirmBind(bindId, otp),
+        ...options,
+        onSuccess: (card, ...rest) => {
+            queryClient.setQueryData(paymentKeys.cards(), (cards) => (cards ? [card, ...cards.filter((c) => c.id !== card.id)] : cards))
+            queryClient.invalidateQueries({ queryKey: paymentKeys.cards() })
+            options?.onSuccess?.(card, ...rest)
         },
-        enabled: isUuid(bindId),
-        retry: (count, error) => ![404, 409].includes(getErrorStatus(error)) && count < 2,
-        refetchInterval: (q) => (bindStillPolling(q.state) ? BIND_POLL_MS : false),
-        staleTime: Infinity,
     })
-    void query.dataUpdatedAt // re-render on every poll
-    return { ...query, polling: bindStillPolling(queryClient.getQueryState(paymentKeys.bind(bindId))) }
 }
 
 /** Removes a saved card (and revokes its token at Multicard). */

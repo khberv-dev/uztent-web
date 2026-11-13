@@ -57,14 +57,21 @@ const API_MESSAGES = {
     'You can link at most 10 cards': 'Koʻpi bilan 10 ta karta qoʻshish mumkin.',
     'Card binding not found or expired': 'Karta qoʻshish sessiyasi topilmadi yoki muddati tugadi.',
     'This card is linked to another account': 'Bu karta boshqa akkauntga bogʻlangan.',
+    'The card has expired': 'Karta muddati tugagan.',
+    'The card was rejected': 'Multicard kartani qabul qilmadi.',
+    'Wrong or expired confirmation code': 'SMS kod notoʻgʻri yoki muddati tugagan. Qayta kiriting.',
+    'A code was sent recently, wait a minute and try again': 'Kod yaqinda yuborilgan. Bir daqiqadan soʻng qayta urinib koʻring.',
+    'Too many attempts to add a card, try again later': 'Karta qoʻshishga juda koʻp urinildi. Keyinroq qayta urinib koʻring.',
+    'Too many wrong codes. Add the card again': 'Juda koʻp notoʻgʻri kod kiritildi. Kartani qaytadan qoʻshing.',
     'No stream key yet. Generate one with POST /streams/me/key': 'Hali stream key yoʻq. Avval stream key yarating.',
 }
 
-/** Multicard's decline codes that are worth explaining to the donor. */
+/** Multicard's codes (`reason` on a declined payment or a rejected card) worth explaining to the user. */
 const DECLINE_REASONS = {
     ERROR_INSUFFICIENT_FUNDS: 'Kartada mablagʻ yetarli emas.',
     ERROR_CARD_EXPIRED: 'Karta muddati tugagan.',
     ERROR_CARD_BLOCKED: 'Karta bloklangan.',
+    ERROR_CARD_NOT_FOUND: 'Karta raqami yoki amal qilish muddatini tekshiring.',
 }
 
 function translate(message) {
@@ -74,6 +81,8 @@ function translate(message) {
     const amount = message.match(/^amount must be between (\d+) and (\d+)/)
     if (/^otp must be/.test(message)) return 'SMS kod 4–8 ta raqamdan iborat boʻlishi kerak.'
     if (/^phone must be/.test(message)) return 'Telefon raqamini 998XXXXXXXXX koʻrinishida kiriting.'
+    if (/^pan must be/.test(message)) return 'Karta raqami 16 ta raqamdan iborat boʻlishi kerak.'
+    if (/^expiry must be/.test(message)) return 'Amal qilish muddatini OO/YY koʻrinishida kiriting.'
     if (amount) return `Summa ${formatSom(Number(amount[1]))} va ${formatSom(Number(amount[2]))} oraligʻida boʻlishi kerak.`
     return message.charAt(0).toUpperCase() + message.slice(1)
 }
@@ -86,7 +95,7 @@ export function getErrorMessage(error, fallback = 'Nimadir xato ketdi. Qayta uri
     if (getErrorStatus(error) >= 500 && !messages.some((m) => API_MESSAGES[m])) return 'Serverda xatolik. Birozdan soʻng qayta urinib koʻring.'
     if (messages.length === 0) return fallback
     const text = messages.map(translate).join(' ')
-    // 402 "Payment was declined" carries Multicard's code, e.g. ERROR_INSUFFICIENT_FUNDS
+    // 402 "Payment was declined" and 400 "The card was rejected" carry Multicard's code in `reason`
     const reason = DECLINE_REASONS[error?.response?.data?.reason]
     return reason ? `${text} ${reason}` : text
 }

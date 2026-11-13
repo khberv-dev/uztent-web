@@ -1,8 +1,10 @@
 import { apiClient } from './client'
 
 /*
- * Saved cards, bound through Multicard's card form: the card number is typed on Multicard's page,
- * and the API keeps only Multicard's token (never returned) and the masked number.
+ * Saved cards, bound through Multicard's card-binding API: the card number and expiry pass through
+ * our API to Multicard (never stored there), Multicard texts a code to the card's phone, and the API
+ * keeps only Multicard's token (never returned) and the masked number.
+ * Never log or persist the card number or expiry on the client either.
  */
 
 /**
@@ -13,6 +15,14 @@ import { apiClient } from './client'
  * @property {string} createdAt
  */
 
+/**
+ * @typedef {Object} CardBinding
+ * @property {string} bindId
+ * @property {string} cardPan  masked
+ * @property {SavedCard['ps']} ps
+ * @property {string} expiresAt  enter the code before this (10 minutes)
+ */
+
 export const paymentsApi = {
     /** GET /payments/cards, newest first. @returns {Promise<SavedCard[]>} */
     async listCards(signal) {
@@ -21,19 +31,18 @@ export const paymentsApi = {
     },
 
     /**
-     * POST /payments/cards: starts binding. Send the user to `formUrl`; Multicard brings them back to
-     * CARD_BIND_RETURN_URL?bindId=…&result=success|declined.
-     * @param {string} phone the card's SMS phone, 998XXXXXXXXX
-     * @returns {Promise<{bindId: string, formUrl: string, expiresAt: string}>}
+     * POST /payments/cards: step 1, Multicard texts a code to the card's phone.
+     * @param {{pan: string, expiry: string, phone: string}} card  pan: 16 digits; expiry: "MM/YY"; phone: 998XXXXXXXXX
+     * @returns {Promise<CardBinding>}
      */
-    async startBind(phone) {
-        const { data } = await apiClient.post('/payments/cards', { phone })
+    async addCard({ pan, expiry, phone }) {
+        const { data } = await apiClient.post('/payments/cards', { pan, expiry, phone })
         return data
     },
 
-    /** GET /payments/cards/bind/:bindId. @returns {Promise<{status: 'pending' | 'active' | 'deleted', card: SavedCard | null}>} */
-    async bindStatus(bindId, signal) {
-        const { data } = await apiClient.get(`/payments/cards/bind/${bindId}`, { signal })
+    /** POST /payments/cards/bind/:bindId/confirm: step 2, the SMS code. @returns {Promise<SavedCard>} */
+    async confirmBind(bindId, otp) {
+        const { data } = await apiClient.post(`/payments/cards/bind/${bindId}/confirm`, { otp })
         return data
     },
 
