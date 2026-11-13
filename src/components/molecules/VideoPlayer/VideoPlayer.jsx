@@ -7,7 +7,7 @@ import { PlayerControls } from './PlayerControls'
 import styles from './VideoPlayer.module.css'
 
 const LIVE_RETRY_MS = 5000
-const HIDE_CONTROLS_MS = 2500
+const HIDE_CONTROLS_MS = 3000 // controls hide after this long without input
 // Within this many seconds of the live edge counts as "watching live"
 const LIVE_THRESHOLD_S = 4
 // Without hls.js (native HLS) aim this far behind the end of the playlist
@@ -35,6 +35,8 @@ export function VideoPlayer({ src, live = false, poster, muted: startMuted = fal
     const containerRef = useRef(null)
     const hlsRef = useRef(null)
     const hideTimerRef = useRef(null)
+    // pointerType of the last press: taps behave differently from mouse clicks
+    const pointerTypeRef = useRef('mouse')
     // The element lives in a ref for imperative calls (play, seek, volume); the state copy only
     // exists so effects/hooks re-run once it mounts.
     const videoRef = useRef(null)
@@ -234,6 +236,13 @@ export function VideoPlayer({ src, live = false, poster, muted: startMuted = fal
         hideTimerRef.current = setTimeout(() => setControlsActive(false), HIDE_CONTROLS_MS)
     }
 
+    // Playback starting (autoplay, or the play button) counts as activity: hide after the idle delay
+    useEffect(() => {
+        if (media.paused) return
+        clearTimeout(hideTimerRef.current)
+        hideTimerRef.current = setTimeout(() => setControlsActive(false), HIDE_CONTROLS_MS)
+    }, [media.paused])
+
     useEffect(() => () => clearTimeout(hideTimerRef.current), [])
 
     const showControls = controlsActive || media.paused || menuOpen || status !== 'ready'
@@ -266,13 +275,25 @@ export function VideoPlayer({ src, live = false, poster, muted: startMuted = fal
             aria-label={live ? 'Live video pleyer' : 'Video pleyer'}
             onKeyDown={handleKeyDown}
             onPointerMove={poke}
-            onPointerDown={poke}
-            onPointerLeave={() => setControlsActive(false)}
+            onPointerDown={(event) => {
+                pointerTypeRef.current = event.pointerType
+                poke()
+            }}
+            // Touch browsers fire pointerleave as soon as the finger lifts; only a mouse really leaves
+            onPointerLeave={(event) => event.pointerType === 'mouse' && setControlsActive(false)}
         >
             <video ref={attachVideo} className={styles.video} playsInline poster={poster ?? undefined} />
 
-            {/* Click to play/pause, double-click for fullscreen */}
-            <div className={styles.surface} onClick={actions.togglePlay} onDoubleClick={actions.toggleFullscreen} aria-hidden="true" />
+            {/*
+              Mouse: click to play/pause, double-click for fullscreen.
+              Touch: a tap only shows the controls (pointerdown already did); play/pause is the button's job.
+            */}
+            <div
+                className={styles.surface}
+                onClick={() => pointerTypeRef.current === 'mouse' && actions.togglePlay()}
+                onDoubleClick={() => pointerTypeRef.current === 'mouse' && actions.toggleFullscreen()}
+                aria-hidden="true"
+            />
 
             {status !== 'ready' ? (
                 <div className={styles.overlay} aria-live="polite">
