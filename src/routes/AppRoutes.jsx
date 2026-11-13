@@ -34,6 +34,7 @@ export function AppRoutes() {
                 <Route element={<ProtectedRoute />}>
                     <Route path={paths.vod()} element={<VodPage />} />
                     <Route path={paths.settings} element={<SettingsPage />} />
+                    <Route path={paths.settingsCards} element={<SettingsPage />} />
                 </Route>
             </Route>
 

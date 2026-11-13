@@ -1,0 +1,84 @@
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}
+
+.header > div {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+    flex: 1 1 24rem;
+}
+
+.checking {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.addForm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-2);
+}
+
+.prefix {
+    color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) 0;
+}
+
+.row + .row { border-top: 1px solid var(--color-border); }
+
+.cardIcon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 3.6rem;
+    height: 3.6rem;
+    border-radius: var(--radius-md);
+    background: var(--color-primary-subtle);
+    color: var(--color-primary);
+}
+
+.cardText {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+}

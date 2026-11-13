@@ -6,7 +6,7 @@ import { readPreference, writePreference } from '@/lib/preferences'
 import { PlayerControls } from './PlayerControls'
 import styles from './VideoPlayer.module.css'
 
-const LIVE_RETRY_MS = 5000
+const LIVE_RETRY_MS = 2000 // live: reload after a fatal network error (see the HLS notes in CLAUDE.md)
 const HIDE_CONTROLS_MS = 3000 // controls hide after this long without input
 // Within this many seconds of the live edge counts as "watching live"
 const LIVE_THRESHOLD_S = 4
@@ -123,7 +123,8 @@ export function VideoPlayer({ src, live = false, poster, muted: startMuted = fal
         import('hls.js').then(({ default: Hls }) => {
             if (cancelled) return
             if (Hls.isSupported()) {
-                hls = new Hls({ lowLatencyMode: live })
+                // MediaMTX serves standard HLS (hlsVariant: fmp4), not Low-Latency HLS
+                hls = new Hls({ lowLatencyMode: false, liveSyncDurationCount: 3 })
                 hlsRef.current = hls
                 hls.on(Hls.Events.MANIFEST_PARSED, play)
                 hls.on(Hls.Events.ERROR, (_event, data) => {
@@ -131,10 +132,15 @@ export function VideoPlayer({ src, live = false, poster, muted: startMuted = fal
                     if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
                         hls.recoverMediaError()
                     } else if (data.type === Hls.ErrorTypes.NETWORK_ERROR && live) {
-                        // Usually: the encoder isn't sending yet / anymore. Keep retrying.
+                        // The encoder isn't sending yet, the rendition isn't published yet right after
+                        // stream.started (404), or MediaMTX closed an idle session (401, e.g. a background
+                        // tab). Start over from the original URL, which opens a new session.
                         setStatus('waiting')
                         clearTimeout(retryTimer)
-                        retryTimer = setTimeout(() => hls.loadSource(src), LIVE_RETRY_MS)
+                        retryTimer = setTimeout(() => {
+                            hls.loadSource(src)
+                            hls.startLoad()
+                        }, LIVE_RETRY_MS)
                     } else {
                         setStatus('error')
                     }

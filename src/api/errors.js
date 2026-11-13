@@ -48,7 +48,23 @@ const API_MESSAGES = {
     'Payment provider is unavailable': 'Toʻlov tizimi hozir ishlamayapti. Keyinroq urinib koʻring.',
     'Payment provider rejected the request': 'Toʻlov tizimi soʻrovni rad etdi. Keyinroq urinib koʻring.',
     'Donation not found': 'Donat topilmadi.',
+    'Payment was declined': 'Karta toʻlovni rad etdi.',
+    'Sign in to pay with a saved card': 'Saqlangan karta bilan toʻlash uchun tizimga kiring.',
+    'Card not found': 'Karta topilmadi.',
+    'Wrong confirmation code': 'SMS kod notoʻgʻri. Qayta kiriting.',
+    "This donation doesn't need confirmation": 'Bu donat tasdiqlashni talab qilmaydi.',
+    'This donation has expired': 'Donat muddati tugadi. Qaytadan urinib koʻring.',
+    'You can link at most 10 cards': 'Koʻpi bilan 10 ta karta qoʻshish mumkin.',
+    'Card binding not found or expired': 'Karta qoʻshish sessiyasi topilmadi yoki muddati tugadi.',
+    'This card is linked to another account': 'Bu karta boshqa akkauntga bogʻlangan.',
     'No stream key yet. Generate one with POST /streams/me/key': 'Hali stream key yoʻq. Avval stream key yarating.',
+}
+
+/** Multicard's decline codes that are worth explaining to the donor. */
+const DECLINE_REASONS = {
+    ERROR_INSUFFICIENT_FUNDS: 'Kartada mablagʻ yetarli emas.',
+    ERROR_CARD_EXPIRED: 'Karta muddati tugagan.',
+    ERROR_CARD_BLOCKED: 'Karta bloklangan.',
 }
 
 function translate(message) {
@@ -56,6 +72,8 @@ function translate(message) {
     const slow = message.match(/^Slow mode is on: wait (\d+) s/)
     if (slow) return `Slow mode yoqilgan: keyingi xabar uchun ${slow[1]} s kuting.`
     const amount = message.match(/^amount must be between (\d+) and (\d+)/)
+    if (/^otp must be/.test(message)) return 'SMS kod 4–8 ta raqamdan iborat boʻlishi kerak.'
+    if (/^phone must be/.test(message)) return 'Telefon raqamini 998XXXXXXXXX koʻrinishida kiriting.'
     if (amount) return `Summa ${formatSom(Number(amount[1]))} va ${formatSom(Number(amount[2]))} oraligʻida boʻlishi kerak.`
     return message.charAt(0).toUpperCase() + message.slice(1)
 }
@@ -67,7 +85,10 @@ export function getErrorMessage(error, fallback = 'Nimadir xato ketdi. Qayta uri
     // 5xx: only documented messages (e.g. 502 "Payment provider is unavailable") are worth showing
     if (getErrorStatus(error) >= 500 && !messages.some((m) => API_MESSAGES[m])) return 'Serverda xatolik. Birozdan soʻng qayta urinib koʻring.'
     if (messages.length === 0) return fallback
-    return messages.map(translate).join(' ')
+    const text = messages.map(translate).join(' ')
+    // 402 "Payment was declined" carries Multicard's code, e.g. ERROR_INSUFFICIENT_FUNDS
+    const reason = DECLINE_REASONS[error?.response?.data?.reason]
+    return reason ? `${text} ${reason}` : text
 }
 
 /**

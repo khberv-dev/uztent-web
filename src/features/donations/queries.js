@@ -7,7 +7,10 @@ export const DONATION_MIN = 1_000
 export const DONATION_MAX = 10_000_000
 export const DONATION_MESSAGE_MAX = 200
 
-/** Creates the donation; the caller redirects to `checkoutUrl` (Multicard's payment page). */
+/**
+ * Creates the donation. Checkout: the caller opens `checkoutUrl` (Multicard's payment page).
+ * With `cardId`: the saved card is charged; the result is `paid`, or `pending` with `otpRequired`.
+ */
 export function useCreateDonation(options) {
     return useMutation({
         mutationFn: ({ target, ...body }) => donationsApi.create(target, { ...body, lang: 'uz' }),
@@ -15,10 +18,23 @@ export function useCreateDonation(options) {
     })
 }
 
+/** Confirms a card donation with the SMS code; the result goes into the donation's cache entry. */
+export function useConfirmDonation(options) {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({ id, otp }) => donationsApi.confirm(id, otp),
+        ...options,
+        onSuccess: (donation, ...rest) => {
+            queryClient.setQueryData(donationKeys.detail(donation.id), donation)
+            options?.onSuccess?.(donation, ...rest)
+        },
+    })
+}
+
 const POLL_MS = 2000
 const MAX_POLLS = 45 // ~1.5 min: the callback usually lands a moment after the redirect
 
-const stillPolling = (state) => state?.data?.status === 'pending' && state.dataUpdateCount < MAX_POLLS
+const stillPolling = (state) => state?.data?.status === 'pending' && !state.data.otpRequired && state.dataUpdateCount < MAX_POLLS
 
 /**
  * GET /donations/:id for the return page. Polls while `pending`, because Multicard can redirect the

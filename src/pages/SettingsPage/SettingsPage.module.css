@@ -5,3 +5,6 @@
     max-width: 72rem;
     margin: 0 auto;
 }
+
+/* Clear the sticky navbar when scrolled to */
+.cards { scroll-margin-top: calc(var(--navbar-height) + var(--space-4)); }

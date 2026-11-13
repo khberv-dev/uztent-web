@@ -12,6 +12,7 @@ export {
     DONATION_MAX,
     DONATION_MESSAGE_MAX,
     DONATION_MIN,
+    useConfirmDonation,
     useCreateDonation,
     useDonation,
     useStreamDonations,

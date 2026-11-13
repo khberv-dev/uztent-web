@@ -1,12 +1,25 @@
+import { useEffect, useRef } from 'react'
+import { useLocation, useNavigate, useSearchParams } from 'react-router'
 import { getErrorMessage } from '@/api/errors'
 import { Button, Card, Heading, Skeleton } from '@/components/atoms'
 import { Alert } from '@/components/molecules'
-import { PasswordForm, ProfileForm } from '@/components/organisms'
+import { PasswordForm, ProfileForm, SavedCards } from '@/components/organisms'
 import { useMe } from '@/features/users'
+import { paths } from '@/routes/paths'
 import styles from './SettingsPage.module.css'
 
+/** Account settings. /settings/cards is the same page, scrolled to the cards (Multicard's form returns there). */
 export function SettingsPage() {
     const { data: user, isPending, isError, error, refetch } = useMe()
+    const location = useLocation()
+    const navigate = useNavigate()
+    const [searchParams] = useSearchParams()
+    const cardsRef = useRef(null)
+    const onCardsPage = location.pathname === paths.settingsCards
+
+    useEffect(() => {
+        if (onCardsPage && user) cardsRef.current?.scrollIntoView({ block: 'start' })
+    }, [onCardsPage, user])
 
     return (
         <div className={styles.page}>
@@ -35,6 +48,13 @@ export function SettingsPage() {
                     <Card>
                         {/* Remount when hasPassword flips so the form switches from "set" to "change" cleanly */}
                         <PasswordForm key={String(user.hasPassword)} user={user} />
+                    </Card>
+                    <Card ref={cardsRef} className={styles.cards}>
+                        <SavedCards
+                            bindId={onCardsPage ? searchParams.get('bindId') : null}
+                            bindResult={searchParams.get('result')}
+                            onBindDismiss={() => navigate(paths.settingsCards, { replace: true })}
+                        />
                     </Card>
                 </>
             )}

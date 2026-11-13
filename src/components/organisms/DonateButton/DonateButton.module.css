@@ -60,3 +60,47 @@
 
 .success { color: var(--color-success); }
 .danger { color: var(--color-danger); }
+
+.methods {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.method {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 4.4rem;
+    padding: 0 var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-2);
+    color: var(--color-text);
+    font: inherit;
+    font-weight: var(--font-weight-semibold);
+    text-align: left;
+    cursor: pointer;
+    transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.method:hover { background: var(--color-hover); }
+.method:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.method svg { flex-shrink: 0; color: var(--color-text-muted); }
+
+.addCard {
+    align-self: flex-start;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+}
+
+.addCard:hover { text-decoration: underline; }
+
+.method.selected,
+.method.selected:hover {
+    background: var(--color-primary-subtle);
+    border-color: var(--color-primary);
+}
+
+.method.selected svg { color: var(--color-primary); }
