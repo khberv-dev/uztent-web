@@ -2,7 +2,7 @@ import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router'
 import { getErrorMessage } from '@/api/errors'
 import { Button, Icon, IconButton, Skeleton, Spinner, Text } from '@/components/atoms'
-import { ChatMessage, Modal } from '@/components/molecules'
+import { ChatDonation, ChatMessage, Modal } from '@/components/molecules'
 import {
     flattenChat,
     useAddModerator,
@@ -14,6 +14,7 @@ import {
     useModerators,
     useRemoveModerator,
 } from '@/features/chat'
+import { useStreamDonations } from '@/features/donations'
 import { useMe } from '@/features/users'
 import { cn } from '@/lib/cn'
 import { useIsAuthenticated } from '@/lib/session'
@@ -38,6 +39,18 @@ export function ChatPanel({ streamId, ownerId, live, slowModeSeconds = 0, classN
 
     const history = useChatHistory(streamId)
     const messages = useMemo(() => flattenChat(history.data), [history.data])
+    const donations = useStreamDonations(streamId)
+
+    // Paid donations sit in the timeline next to the messages. While older messages haven't been
+    // loaded, donations from before the oldest loaded message are left out (they'd be out of context).
+    const entries = useMemo(() => {
+        const from = history.hasNextPage ? messages[0]?.createdAt : null
+        const donationEntries = (donations.data ?? [])
+            .map((donation) => ({ kind: 'donation', id: `donation-${donation.id}`, at: donation.paidAt ?? donation.createdAt, donation }))
+            .filter((entry) => !from || entry.at >= from)
+        const messageEntries = messages.map((message) => ({ kind: 'message', id: message.id, at: message.createdAt, message }))
+        return [...messageEntries, ...donationEntries].sort((a, b) => (a.at < b.at ? -1 : a.at > b.at ? 1 : 0))
+    }, [messages, donations.data, history.hasNextPage])
     const permissions = useChatPermissions(streamId)
     const role = permissions.data?.role
     const canModerate = Boolean(permissions.data?.canModerate)
@@ -70,7 +83,7 @@ export function ChatPanel({ streamId, ownerId, live, slowModeSeconds = 0, classN
     const followingRef = useRef(true)
     const restoreFromBottomRef = useRef(null) // keeps the position when older messages are prepended
     const [pausedAtId, setPausedAtId] = useState(null) // last message id when the viewer scrolled up
-    const lastId = messages.at(-1)?.id ?? null
+    const lastId = entries.at(-1)?.id ?? null
     const hasUnseen = pausedAtId !== null && lastId !== pausedAtId
 
     useLayoutEffect(() => {
@@ -82,7 +95,7 @@ export function ChatPanel({ streamId, ownerId, live, slowModeSeconds = 0, classN
         } else if (followingRef.current) {
             list.scrollTop = list.scrollHeight
         }
-    }, [messages])
+    }, [entries])
 
     function handleScroll() {
         const list = listRef.current
@@ -222,7 +235,7 @@ export function ChatPanel({ streamId, ownerId, live, slowModeSeconds = 0, classN
                             <Button size="sm" variant="ghost" onClick={() => history.refetch()}>Qayta urinish</Button>
                         </div>
                     )}
-                    {history.isSuccess && messages.length === 0 && (
+                    {history.isSuccess && entries.length === 0 && (
                         <div className={styles.center}>
                             <Icon name="message" size={24} />
                             <Text size="sm" tone="muted">
@@ -231,7 +244,9 @@ export function ChatPanel({ streamId, ownerId, live, slowModeSeconds = 0, classN
                         </div>
                     )}
 
-                    {messages.map((message) => (
+                    {entries.map(({ kind, id, message, donation }) => kind === 'donation' ? (
+                        <ChatDonation key={id} donation={donation} />
+                    ) : (
                         <ChatMessage
                             key={message.id}
                             message={message}

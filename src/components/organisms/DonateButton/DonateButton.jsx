@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { getErrorMessage } from '@/api/errors'
-import { Button, Icon, Text } from '@/components/atoms'
+import { Button, Icon, Spinner, Text } from '@/components/atoms'
 import { Alert, FormField, Modal } from '@/components/molecules'
-import { DONATION_MAX, DONATION_MESSAGE_MAX, DONATION_MIN, useCreateDonation } from '@/features/donations'
+import { DONATION_MAX, DONATION_MESSAGE_MAX, DONATION_MIN, useCreateDonation, useDonation } from '@/features/donations'
 import { cn } from '@/lib/cn'
 import { formatSom } from '@/lib/format'
 import { useIsAuthenticated } from '@/lib/session'
@@ -19,30 +19,92 @@ function validateAmount(raw) {
     return null
 }
 
+/**
+ * After the invoice is created: the checkout is open in another tab, and this follows the donation's
+ * status (GET /donations/:id) so the modal can say when the payment went through.
+ */
+function CheckoutStatus({ donation, popupBlocked, onRetry }) {
+    const { data, polling } = useDonation(donation.id)
+    const status = data?.status ?? donation.status
+    const amount = formatSom(donation.amount)
+    const checkoutLink = donation.checkoutUrl && (
+        <Button as="a" href={donation.checkoutUrl} target="_blank" rel="noopener noreferrer" variant={popupBlocked ? 'primary' : 'secondary'} fullWidth>
+            Toʻlov sahifasini ochish
+        </Button>
+    )
+
+    if (status === 'paid') {
+        return (
+            <div className={styles.status}>
+                <span className={styles.success}><Icon name="checkCircle" size={40} /></span>
+                <Text weight="semibold">Rahmat! {amount} donatingiz yuborildi.</Text>
+            </div>
+        )
+    }
+    if (status === 'pending') {
+        return (
+            <div className={styles.status}>
+                {polling && !popupBlocked && <Spinner size="lg" />}
+                <Text weight="semibold">
+                    {popupBlocked ? 'Toʻlov sahifasini oching' : 'Toʻlov sahifasi yangi tabda ochildi'}
+                </Text>
+                <Text tone="muted">
+                    {polling
+                        ? `${amount} toʻlovini yakunlang. Toʻlov tasdiqlangach, bu oyna oʻzi yangilanadi.`
+                        : 'Toʻlov hali tasdiqlanmadi. Toʻlagan boʻlsangiz, birozdan soʻng qayta tekshiring.'}
+                </Text>
+                {checkoutLink}
+            </div>
+        )
+    }
+    return (
+        <div className={styles.status}>
+            <span className={styles.danger}><Icon name="alert" size={40} /></span>
+            <Text weight="semibold">{status === 'expired' ? 'Toʻlov muddati tugadi.' : 'Toʻlov amalga oshmadi.'}</Text>
+            <Button onClick={onRetry} fullWidth>Qayta urinish</Button>
+        </div>
+    )
+}
+
 function DonateForm({ target }) {
     const authenticated = useIsAuthenticated()
     const [amount, setAmount] = useState('10000')
     const [message, setMessage] = useState('')
     const [anonymous, setAnonymous] = useState(false)
     const [amountError, setAmountError] = useState(null)
+    const [popupBlocked, setPopupBlocked] = useState(false)
 
-    const donate = useCreateDonation({
-        // Multicard's page takes over from here, then returns the donor to /donations/complete
-        onSuccess: (donation) => donation.checkoutUrl && window.location.assign(donation.checkoutUrl),
-    })
-    const redirecting = donate.isSuccess && Boolean(donate.data?.checkoutUrl)
+    const donate = useCreateDonation()
 
     function handleSubmit(event) {
         event.preventDefault()
         const error = validateAmount(amount)
         setAmountError(error)
         if (error) return
+        // Open the tab now, while we're still inside the click: browsers block window.open after an
+        // await. It gets the checkout URL once the invoice exists, or is closed if that fails.
+        const checkoutTab = window.open('', '_blank')
+        if (checkoutTab) {
+            checkoutTab.opener = null
+            checkoutTab.document.title = 'Toʻlov…'
+        }
+        setPopupBlocked(!checkoutTab)
         donate.mutate({
             target,
             amount: Number(amount),
             message: message.trim() || undefined,
             anonymous: authenticated ? anonymous : undefined, // guests are always anonymous
+        }, {
+            onSuccess: (donation) => {
+                if (checkoutTab && donation.checkoutUrl) checkoutTab.location.href = donation.checkoutUrl
+                else checkoutTab?.close()
+            },
+            onError: () => checkoutTab?.close(),
         })
+    }
+
+    if (donate.isSuccess) {
+        return <CheckoutStatus donation={donate.data} popupBlocked={popupBlocked} onRetry={() => donate.reset()} />
     }
 
     return (
@@ -77,7 +139,6 @@ function DonateForm({ target }) {
                     setAmountError(null)
                 }}
                 error={amountError}
-                hint={`${formatSom(DONATION_MIN)} – ${formatSom(DONATION_MAX)}`}
             />
 
             <FormField
@@ -86,7 +147,6 @@ function DonateForm({ target }) {
                 maxLength={DONATION_MESSAGE_MAX}
                 value={message}
                 onChange={(event) => setMessage(event.target.value)}
-                hint={`${message.length}/${DONATION_MESSAGE_MAX}. Xabar streamda hamma uchun koʻrinadi.`}
             />
 
             {authenticated ? (
@@ -100,11 +160,11 @@ function DonateForm({ target }) {
 
             {donate.isError && <Alert>{getErrorMessage(donate.error, 'Toʻlovni boshlab boʻlmadi.')}</Alert>}
 
-            <Button type="submit" size="lg" fullWidth loading={donate.isPending || redirecting} leftIcon={<Icon name="gift" size={18} />}>
+            <Button type="submit" size="lg" fullWidth loading={donate.isPending} leftIcon={<Icon name="gift" size={18} />}>
                 {amount && !validateAmount(amount) ? `${formatSom(Number(amount))} donat qilish` : 'Donat qilish'}
             </Button>
             <Text size="xs" tone="subtle" className={styles.note}>
-                Toʻlov Multicard sahifasida amalga oshiriladi. Karta maʼlumotlari uztent’ga yuborilmaydi.
+                Toʻlov Multicard sahifasida, yangi tabda amalga oshiriladi. Karta maʼlumotlari uztent’ga yuborilmaydi.
             </Text>
         </form>
     )

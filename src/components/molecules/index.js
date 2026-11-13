@@ -1,5 +1,6 @@
 export { Alert } from './Alert'
 export { ChannelListItem } from './ChannelListItem'
+export { ChatDonation } from './ChatDonation'
 export { ChatMessage } from './ChatMessage'
 export { ConfirmButton } from './ConfirmButton'
 export { CopyField } from './CopyField'

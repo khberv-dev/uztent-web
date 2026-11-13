@@ -48,3 +48,15 @@
 }
 
 .note { text-align: center; }
+
+.status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+    text-align: center;
+}
+
+.success { color: var(--color-success); }
+.danger { color: var(--color-danger); }

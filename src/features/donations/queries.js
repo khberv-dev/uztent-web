@@ -39,7 +39,7 @@ export function useDonation(id) {
 }
 
 /** Paid donations of a stream, newest first. `donation.received` events prepend new ones. */
-export function useStreamDonations(streamId, { limit = 20 } = {}) {
+export function useStreamDonations(streamId, { limit = 50 } = {}) {
     return useQuery({
         queryKey: donationKeys.stream(streamId),
         queryFn: ({ signal }) => donationsApi.listForStream(streamId, { limit }, signal),
